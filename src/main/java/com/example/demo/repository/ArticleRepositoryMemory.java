@@ -5,19 +5,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.stereotype.Repository;
-
 import com.example.demo.domain.Article;
 
-@Repository
 public class ArticleRepositoryMemory implements ArticleRepository {
 
     private static final Map<Long, Article> articles = new HashMap<>();
     private static final AtomicLong autoincrement = new AtomicLong(1);
-    
+
     @Override
     public List<Article> findAll() {
         return articles.entrySet().stream()
+            .map(it -> {
+                Article article = it.getValue();
+                article.setId(it.getKey());
+                return article;
+            }).toList();
+    }
+
+    @Override
+    public List<Article> findAllByBoardId(Long boardId) {
+        return articles.entrySet().stream()
+            .filter(it -> it.getValue().getBoardId().equals(boardId))
             .map(it -> {
                 Article article = it.getValue();
                 article.setId(it.getKey());
@@ -39,9 +47,8 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     }
 
     @Override
-    public Article update(Long id, Article article) {
-        articles.put(id, article);
-        article.setId(id);
+    public Article update(Article article) {
+        articles.put(article.getId(), article);
         return article;
     }
 

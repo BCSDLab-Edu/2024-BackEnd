@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Board Posts</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 56px; /* 네비게이션 바 높이와 일치 */
+    }
+    .navbar {
+      background-color: #343a40;
+    }
+    .navbar-brand, .nav-link {
+      color: #ffffff !important;
+    }
+    .nav-link:hover {
+      color: #dcdcdc !important;
+    }
+    .board-title {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #343a40;
+    }
+    .post-list {
+      margin-top: 20px;
+    }
+    .post-card {
+      margin-bottom: 20px;
+    }
+    .post-card .card {
+      border: 1px solid #dee2e6;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    .post-card .card:hover {
+      transform: scale(1.05);
+    }
+    .post-card a {
+      text-decoration: none;
+      color: #007bff;
+    }
+    .post-card a:hover {
+      text-decoration: underline;
+    }
+    .post-card .card-body {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <a class="navbar-brand" href="/main">게시판</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav" id="board-nav">
+      <!-- 게시판 링크가 여기에 동적으로 추가됩니다 -->
+    </ul>
+  </div>
+</nav>
+<div class="container">
+  <h1 class="board-title" id="board-title"></h1>
+  <div class="row post-list" id="post-list">
+    <!-- 게시물 카드가 여기에 동적으로 추가됩니다 -->
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // URL에서 boardId 값을 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const boardId = urlParams.get('boardId');
+
+    // 네비게이션 바에 게시판 목록 추가
+    fetch('http://localhost:8080/boards')
+    .then(response => response.json())
+    .then(boards => {
+      const boardNav = document.getElementById('board-nav');
+      boards.forEach(board => {
+        const navItem = document.createElement('li');
+        navItem.className = 'nav-item';
+        navItem.innerHTML = `
+            <a class="nav-link" href="?boardId=${board.id}">${board.name}</a>
+          `;
+        boardNav.appendChild(navItem);
+      });
+    })
+    .catch(error => console.error('Error fetching boards:', error));
+
+    if (boardId) {
+      // 게시판 이름 가져오기
+      fetch(`http://localhost:8080/boards/${boardId}`)
+      .then(response => response.json())
+      .then(boardData => {
+        const boardTitle = document.getElementById('board-title');
+        boardTitle.textContent = boardData.name;
+
+        // 게시판 게시물 가져오기
+        return fetch(`http://localhost:8080/articles?boardId=${boardId}`);
+      })
+      .then(response => response.json())
+      .then(data => {
+        const postList = document.getElementById('post-list');
+
+        data.forEach(post => {
+          const postCard = document.createElement('div');
+          postCard.className = 'col-md-6 col-lg-4 post-card';
+          postCard.innerHTML = `
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <a href="/posts/detail?articleId=${post.id}">${post.title}</a>
+                  </h5>
+                  <p class="card-text">${post.description}</p>
+                  <p class="card-text"><small class="text-muted">작성일: ${new Date(post.created_date).toLocaleString()}</small></p>
+                  <p class="card-text"><small class="text-muted">수정일: ${new Date(post.modified_date).toLocaleString()}</small></p>
+                </div>
+              </div>
+            `;
+          postList.appendChild(postCard);
+        });
+      })
+      .catch(error => console.error('Error fetching data:', error));
+    } else {
+      console.error('boardId parameter is missing in the URL');
+    }
+  });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

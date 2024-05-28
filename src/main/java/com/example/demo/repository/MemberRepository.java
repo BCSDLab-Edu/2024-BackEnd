@@ -10,5 +10,9 @@ public interface MemberRepository {
 
     Member findById(Long id);
 
-    void insert(Member member);
+    Member insert(Member member);
+
+    Member update(Member member);
+
+    void deleteById(Long id);
 }

@@ -1,29 +1,26 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.example.demo.controller.dto.ArticleResponse;
-import com.example.demo.service.ArticleService;
 
 @Controller
 public class PageController {
 
-    private final ArticleService articleService;
-
-    public PageController(ArticleService articleService) {
-        this.articleService = articleService;
+    // 클라이언트에서 JavaScript를 이용해 API를 호출함.
+    @GetMapping("/main")
+    public String getBoardsPage() {
+        return "boardList";
     }
 
-
+    // 클라이언트에서 JavaScript를 이용해 API를 호출함.
     @GetMapping("/posts")
-    public String getPosts(Model model) {
-        List<ArticleResponse> articles = articleService.getAll();
-        model.addAttribute("boardName", "자유게시판");
-        model.addAttribute("posts", articles);
+    public String getArticlesPage() {
+        return "articleList";
+    }
+
+    @GetMapping("/posts/detail")
+    public String getArticleDetailPage() {
         return "article";
     }
 }

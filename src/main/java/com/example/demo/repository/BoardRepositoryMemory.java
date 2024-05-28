@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.stereotype.Repository;
-
 import com.example.demo.domain.Board;
 
-@Repository
 public class BoardRepositoryMemory implements BoardRepository {
 
     private static final Map<Long, Board> boards = new HashMap<>();
@@ -36,7 +33,18 @@ public class BoardRepositoryMemory implements BoardRepository {
     }
 
     @Override
-    public void insert(Board board) {
+    public Board insert(Board board) {
         boards.put(autoincrement.getAndIncrement(), board);
+        return board;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        boards.remove(id);
+    }
+
+    @Override
+    public Board update(Board board) {
+        return boards.put(board.getId(), board);
     }
 }

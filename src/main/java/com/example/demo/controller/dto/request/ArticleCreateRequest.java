@@ -1,4 +1,4 @@
-package com.example.demo.controller.dto;
+package com.example.demo.controller.dto.request;
 
 public record ArticleCreateRequest(
     Long authorId,

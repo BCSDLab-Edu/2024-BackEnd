@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.controller.dto.ArticleCreateRequest;
-import com.example.demo.controller.dto.ArticleResponse;
-import com.example.demo.controller.dto.ArticleUpdateRequest;
+import com.example.demo.controller.dto.request.ArticleCreateRequest;
+import com.example.demo.controller.dto.response.ArticleResponse;
+import com.example.demo.controller.dto.request.ArticleUpdateRequest;
 import com.example.demo.service.ArticleService;
 
 @RestController
@@ -27,8 +28,10 @@ public class ArticleController {
     }
 
     @GetMapping("/articles")
-    public ResponseEntity<List<ArticleResponse>> getArticles() {
-        List<ArticleResponse> response = articleService.getAll();
+    public ResponseEntity<List<ArticleResponse>> getArticles(
+        @RequestParam Long boardId
+    ) {
+        List<ArticleResponse> response = articleService.getByBoardId(boardId);
         return ResponseEntity.ok(response);
     }
 
@@ -41,11 +44,11 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public ResponseEntity<Void> crateArticle(
+    public ResponseEntity<ArticleResponse> crateArticle(
         @RequestBody ArticleCreateRequest request
     ) {
         ArticleResponse response = articleService.create(request);
-        return ResponseEntity.created(URI.create("/articles/" + response.id())).build();
+        return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
     }
 
     @PutMapping("/articles/{id}")
