@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,12 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
-        return MemberResponse.from(member);
+        try {
+            Member member = memberRepository.findById(id);
+            return MemberResponse.from(member);
+        } catch(RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.MEMBER_NOT_EXIST);
+        }
     }
 
     public List<MemberResponse> getAll() {

@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +30,12 @@ public class BoardService {
     }
 
     public BoardResponse getBoardById(Long id) {
-        Board board = boardRepository.findById(id);
-        return BoardResponse.from(board);
+        try {
+            Board board = boardRepository.findById(id);
+            return BoardResponse.from(board);
+        } catch (RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.BOARD_NOT_EXIST);
+        }
     }
 
     @Transactional

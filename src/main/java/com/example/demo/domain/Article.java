@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 public class Article {
 
     private Long id;
-    private Long authorId;
+    private final Long authorId;
     private Long boardId;
     private String title;
     private String content;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public Article(

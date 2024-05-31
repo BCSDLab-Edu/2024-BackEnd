@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +36,14 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
-        Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        try {
+            Article article = articleRepository.findById(id);
+            Member member = memberRepository.findById(article.getAuthorId());
+            Board board = boardRepository.findById(article.getBoardId());
+            return ArticleResponse.of(article, member, board);
+        } catch (RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.ARTICLE_NOT_EXIST);
+        }
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {

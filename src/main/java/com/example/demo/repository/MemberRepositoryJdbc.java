@@ -3,6 +3,9 @@ package com.example.demo.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -46,27 +49,41 @@ public class MemberRepositoryJdbc implements MemberRepository {
 
     @Override
     public Member insert(Member member) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO member (name, email, password) VALUES (?, ?, ?)
-                """, new String[]{"id"});
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getEmail());
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement("""
+                
+                        INSERT INTO member (name, email, password) VALUES (?, ?, ?)
+                """, new String[]{
+                "id"});
+            ps.setString(1,
+                member.getName());
+            ps.
+                setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
             return ps;
         }, keyHolder);
         return findById(keyHolder.getKey().longValue());
+        } catch(RuntimeException e) { // 데이터 무결성 조건 위배
+            throw new RestApiException(CommonErrorCode.EMAIL_ALREADY_EXIST);
+        }
     }
 
     @Override
     public Member update(Member member) {
-        jdbcTemplate.update("""
-            UPDATE member
+        try {
+            jdbcTemplate.update("""
+            
+                    UPDATE member
             SET name = ?, email = ?
             WHERE id = ?
-            """, member.getName(), member.getEmail(), member.getId());
+            """, member.getName(), member.getEmail(), member.getId
+            ());
         return findById(member.getId());
+        } catch (RuntimeException e) { // 데이터 무결성 조건 위배
+            throw new RestApiException(CommonErrorCode.EMAIL_ALREADY_EXIST);
+        }
     }
 
     @Override
