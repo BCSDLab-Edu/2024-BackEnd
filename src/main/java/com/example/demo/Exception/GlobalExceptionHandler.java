@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBoardNotFound(BoardNotFound boardNotFound) {
         ErrorResponse response=new ErrorResponse(ErrorCode.Board_Not_Found);
         return ResponseEntity.status(response.getCode_id()).body(response);
-    }
+    } 
 
     @ExceptionHandler(MemberNotFound.class)
     public ResponseEntity<ErrorResponse> handleMemberNotFound(MemberNotFound memberNotFound) {
