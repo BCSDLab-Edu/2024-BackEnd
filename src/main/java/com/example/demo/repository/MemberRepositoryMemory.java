@@ -29,8 +29,8 @@ public class MemberRepositoryMemory implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
-        return members.getOrDefault(id, null);
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(members.getOrDefault(id, null));
     }
 
     @Override

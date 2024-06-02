@@ -46,8 +46,8 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     }
 
     @Override
-    public Article findById(Long id) {
-        return articles.getOrDefault(id, null);
+    public Optional<Article> findById(Long id) {
+        return Optional.ofNullable(articles.getOrDefault(id, null));
     }
 
     @Override

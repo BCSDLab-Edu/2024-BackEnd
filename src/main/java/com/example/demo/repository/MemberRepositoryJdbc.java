@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.demo.Exception.MemberNotFound;
+import com.example.demo.Exception.NullExist;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -39,37 +40,48 @@ public class MemberRepositoryJdbc implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Member> findById(Long id) {
+        try{
+            Member member = jdbcTemplate.queryForObject("""
             SELECT id, name, email, password
-            FROM member
+            FROM members
             WHERE id = ?
             """, memberRowMapper, id);
+            return Optional.ofNullable(member);
+        } catch(Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Member insert(Member member) {
+        if (member.getName()==null) {
+            throw new NullExist("이름이 존재하지 않습니다.");
+        }
+        if (member.getEmail()==null) {
+            throw new NullExist("이메일이 존재하지 않습니다.");
+        }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO member (name, email, password) VALUES (?, ?, ?)
+                INSERT INTO members (name, email, password) VALUES (?, ?, ?)
                 """, new String[]{"id"});
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue()).orElseThrow(()->new MemberNotFound("사용자를 찾을 수 없습니다."));
     }
 
     @Override
     public Member update(Member member) {
         jdbcTemplate.update("""
-            UPDATE member
+            UPDATE members
             SET name = ?, email = ?
             WHERE id = ?
             """, member.getName(), member.getEmail(), member.getId());
-        return findById(member.getId());
+        return findById(member.getId()).orElseThrow(()->new MemberNotFound("사용자를 찾을 수 없습니다."));
     }
 
     @Override

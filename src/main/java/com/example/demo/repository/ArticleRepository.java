@@ -13,7 +13,7 @@ public interface ArticleRepository {
 
     List<Article> findAllByMemberId(Long memberId);
 
-    Article findById(Long id);
+    Optional<Article> findById(Long id);
 
     Article insert(Article article);
 

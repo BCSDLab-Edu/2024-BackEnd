@@ -9,7 +9,7 @@ public interface MemberRepository {
 
     List<Member> findAll();
 
-    Member findById(Long id);
+    Optional<Member> findById(Long id);
 
     Member insert(Member member);
 

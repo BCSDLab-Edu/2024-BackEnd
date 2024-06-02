@@ -32,10 +32,7 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
-        if (member == null) {
-            throw new MemberNotFound("사용자를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findById(id).orElseThrow(()-> new MemberNotFound("사용자를 찾을 수 없습니다."));
         return MemberResponse.from(member);
     }
 
@@ -64,11 +61,8 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
-        if(member == null) {
-            throw new MemberNotFound("사용자를 찾을 수 없습니다.");
-        }
-        if(member.getEmail().equals(request.email())&&memberRepositoryJdbc.existByEmail(request.email())) {
+        Member member = memberRepository.findById(id).orElseThrow(()-> new MemberNotFound("사용자를 찾을 수 없습니다."));
+        if(!member.getEmail().equals(request.email())&&memberRepositoryJdbc.existByEmail(request.email())) {
             throw new EmailExist("이메일이 이미 존재합니다.");
         }
 

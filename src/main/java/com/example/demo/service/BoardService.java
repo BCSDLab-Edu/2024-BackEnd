@@ -33,10 +33,7 @@ public class BoardService {
     }
 
     public BoardResponse getBoardById(Long id) {
-        Board board = boardRepository.findById(id);
-        if (board == null) {
-            throw new BoardNotFound("게시판을 찾을 수 없습니다.");
-        }
+        Board board = boardRepository.findById(id).orElseThrow(() -> new BoardNotFound("게시판을 찾을 수 없습니다."));
         return BoardResponse.from(board);
     }
 
@@ -56,10 +53,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse update(Long id, BoardUpdateRequest request) {
-        Board board = boardRepository.findById(id);
-        if (board == null) {
-            throw new BoardNotFound("게시판을 찾을 수 없습니다.");
-        }
+        Board board = boardRepository.findById(id).orElseThrow(()->new BoardNotFound("게시판을 찾을 수 없습니다."));
         board.update(request.name());
         Board updated = boardRepository.update(board);
         return BoardResponse.from(updated);

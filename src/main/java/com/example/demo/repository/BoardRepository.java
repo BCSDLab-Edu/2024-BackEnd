@@ -9,7 +9,7 @@ public interface BoardRepository {
 
     List<Board> findAll();
 
-    Board findById(Long id);
+    Optional<Board> findById(Long id);
 
     Board insert(Board board);
 

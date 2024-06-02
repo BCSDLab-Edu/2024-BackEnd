@@ -35,18 +35,9 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
-        Article article = articleRepository.findById(id);
-        if (article == null) {
-            throw new ArticleNotFound("게시글을 찾을 수 없습니다.");
-        }
-        Member member = memberRepository.findById(article.getAuthorId());
-        if (member == null) {
-            throw new MemberNotFound("사용자를 찾을 수 없습니다.");
-        }
-        Board board = boardRepository.findById(article.getBoardId());
-        if (board == null) {
-            throw new BoardNotFound("게시판을 찾을 수 없습니다.");
-        }
+        Article article = articleRepository.findById(id).orElseThrow(() -> new ArticleNotFound("게시글을 찾을 수 없습니다."));
+        Member member = memberRepository.findById(article.getAuthorId()).orElseThrow(()-> new MemberNotFound("사용자를 찾을 수 없습니다."));
+        Board board = boardRepository.findById(article.getBoardId()).orElseThrow(()->new BoardNotFound("게시판을 찾을 수 없습니다."));
         return ArticleResponse.of(article, member, board);
     }
 
@@ -54,14 +45,8 @@ public class ArticleService {
         List<Article> articles = articleRepository.findAllByBoardId(boardId);
         return articles.stream()
             .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                if (member == null) {
-                    throw new MemberNotFound("사용자를 찾을 수 없습니다.");
-                }
-                Board board = boardRepository.findById(article.getBoardId());
-                if (board == null) {
-                    throw new BoardNotFound("게시판을 찾을 수 없습니다.");
-                }
+                Member member = memberRepository.findById(article.getAuthorId()).orElseThrow(()-> new MemberNotFound("사용자를 찾을 수 없습니다."));
+                Board board = boardRepository.findById(article.getBoardId()).orElseThrow(()->new BoardNotFound("게시판을 찾을 수 없습니다."));
                 return ArticleResponse.of(article, member, board);
             })
             .toList();
@@ -69,14 +54,8 @@ public class ArticleService {
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
-        Member member = memberRepository.findById(request.authorId());
-        if (member == null) {
-            throw new FailMember("사용자를 찾을 수 없습니다.");
-        }
-        Board board = boardRepository.findById(request.boardId());
-        if (board == null) {
-            throw new FailBoard("게시판을 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findById(request.authorId()).orElseThrow(()->new FailMember("사용자를 찾을 수 없습니다."));
+        Board board = boardRepository.findById(request.boardId()).orElseThrow(()->new FailBoard("게시판을 찾을 수 없습니다."));
 
         Article article = new Article(
             request.authorId(),
@@ -92,20 +71,14 @@ public class ArticleService {
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
-        Board board = boardRepository.findById(request.boardId());
-        if (board == null) {
-            throw new FailBoard("게시판을 찾을 수 없습니다.");
-        }
+        Board board = boardRepository.findById(request.boardId()).orElseThrow(()->new FailBoard("게시판을 찾을 수 없습니다."));
 
-        Article article = articleRepository.findById(id);
+        Article article=articleRepository.findById(id).orElseThrow(()->new ArticleNotFound("게시글을 찾을 수 없습니다."));
 
         article.update(request.boardId(), request.title(), request.description());
         Article updated = articleRepository.update(article);
 
-        Member member = memberRepository.findById(updated.getAuthorId());
-        if (member == null) {
-            throw new FailMember("사용자를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findById(updated.getAuthorId()).orElseThrow(()->new FailMember("사용자를 찾을 수 없습니다."));
         return ArticleResponse.of(article, member, board);
     }
 
