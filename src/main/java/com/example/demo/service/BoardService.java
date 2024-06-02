@@ -30,12 +30,14 @@ public class BoardService {
     }
 
     public BoardResponse getBoardById(Long id) {
+        Board board;
+
         try {
-            Board board = boardRepository.findById(id);
-            return BoardResponse.from(board);
+            board = boardRepository.findById(id);
         } catch (RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.BOARD_NOT_EXIST);
+            throw new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST);
         }
+        return BoardResponse.from(board);
     }
 
     @Transactional

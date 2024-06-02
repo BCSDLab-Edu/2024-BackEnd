@@ -15,7 +15,7 @@ public class ErrorResponse {
     private final String code;
     private final String message;
 
-/*    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final List<ValidationError> errors;
 
     @Getter
@@ -31,5 +31,5 @@ public class ErrorResponse {
                     .message(fieldError.getDefaultMessage())
                     .build();
         }
-    }*/
+    }
 }

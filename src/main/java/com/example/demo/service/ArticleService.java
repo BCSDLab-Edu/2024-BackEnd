@@ -36,14 +36,16 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
+        Article article;
         try {
-            Article article = articleRepository.findById(id);
-            Member member = memberRepository.findById(article.getAuthorId());
-            Board board = boardRepository.findById(article.getBoardId());
-            return ArticleResponse.of(article, member, board);
+            article = articleRepository.findById(id);
         } catch (RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.ARTICLE_NOT_EXIST);
+            throw new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST);
         }
+
+        Member member = memberRepository.findById(article.getAuthorId());
+        Board board = boardRepository.findById(article.getBoardId());
+        return ArticleResponse.of(article, member, board);
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {
@@ -66,8 +68,20 @@ public class ArticleService {
             request.description()
         );
         Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
+
+        Member member;
+        Board board;
+        try {
+            member = memberRepository.findById(saved.getAuthorId());
+        } catch(RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.POST_MEMBER_NOT_EXIST);
+        }
+        try {
+            board = boardRepository.findById(saved.getBoardId());
+        } catch(RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.POST_BOARD_NOT_EXIST);
+        }
+        // try-catch 문을 따로 사용하여 어디서 에러가 났는지 구분
         return ArticleResponse.of(saved, member, board);
     }
 
@@ -76,8 +90,16 @@ public class ArticleService {
         Article article = articleRepository.findById(id);
         article.update(request.boardId(), request.title(), request.description());
         Article updated = articleRepository.update(article);
+
         Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+
+        Board board;
+        try {
+            board = boardRepository.findById(article.getBoardId());
+        } catch(RuntimeException e) {
+            throw new RestApiException(CommonErrorCode.UPDATE_BOARD_NOT_EXIST);
+        }
+
         return ArticleResponse.of(article, member, board);
     }
 

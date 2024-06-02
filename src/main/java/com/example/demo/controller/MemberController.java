@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> create(
-        @RequestBody MemberCreateRequest request
+        @Valid @RequestBody MemberCreateRequest request
     ) {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);

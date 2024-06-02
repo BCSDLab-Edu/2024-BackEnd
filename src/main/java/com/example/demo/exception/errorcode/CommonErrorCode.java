@@ -8,14 +8,16 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum CommonErrorCode implements ErrorCode {
     EMAIL_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
-    ARTICLE_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 게시물이 존재하지 않습니다."),
-    MEMBER_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 멤버가 존재하지 않습니다."),
-    BOARD_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 게시판이 존재하지 않습니다."),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not exists"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    ;
+    GET_ARTICLE_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 게시물이 존재하지 않습니다."),
+    GET_MEMBER_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 멤버가 존재하지 않습니다."),
+    GET_BOARD_NOT_EXIST(HttpStatus.NOT_FOUND, "입력한 ID에 해당하는 게시판이 존재하지 않습니다."),
+    POST_ARTICLE_NOT_EXIST(HttpStatus.BAD_REQUEST, "입력한 ID에 해당하는 게시물이 존재하지 않습니다."),
+    POST_MEMBER_NOT_EXIST(HttpStatus.BAD_REQUEST, "입력한 ID에 해당하는 멤버가 존재하지 않습니다."),
+    POST_BOARD_NOT_EXIST(HttpStatus.BAD_REQUEST, "입력한 ID에 해당하는 게시판이 존재하지 않습니다."),
+    UPDATE_BOARD_NOT_EXIST(HttpStatus.BAD_REQUEST,"입력한 ID에 해당하는 게시판이 존재하지 않습니다." ), 
+    UPDATE_NAME_NULL(HttpStatus.BAD_REQUEST, "변경할 이름을 입력해주세요"),
+    UPDATE_EMAIL_NULL(HttpStatus.BAD_REQUEST, "변경할 이메일을 입력해주세요");
 
     private final HttpStatus httpStatus;
     private final String message;
-
 }

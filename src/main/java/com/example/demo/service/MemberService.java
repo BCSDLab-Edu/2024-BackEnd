@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.demo.exception.errorcode.CommonErrorCode;
 import com.example.demo.exception.exception.RestApiException;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +25,14 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
+        Member member;
+
         try {
-            Member member = memberRepository.findById(id);
-            return MemberResponse.from(member);
+            member = memberRepository.findById(id);
         } catch(RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.MEMBER_NOT_EXIST);
+            throw new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST);
         }
+            return MemberResponse.from(member);
     }
 
     public List<MemberResponse> getAll() {
@@ -56,7 +59,14 @@ public class MemberService {
     public MemberResponse update(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id);
         member.update(request.name(), request.email());
-        memberRepository.update(member);
+        try {
+            memberRepository.update(member);
+        } catch(RuntimeException e) {
+            String errorMessage = e.getMessage();
+            if(errorMessage.contains("Duplicate entry")) {
+                throw new RestApiException(CommonErrorCode.EMAIL_ALREADY_EXIST);
+            }
+        }
         return MemberResponse.from(member);
     }
 }

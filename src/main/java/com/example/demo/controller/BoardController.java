@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +40,7 @@ public class BoardController {
 
     @PostMapping("/boards")
     public BoardResponse createBoard(
-        @RequestBody BoardCreateRequest request
+        @Valid @RequestBody BoardCreateRequest request
     ) {
         return boardService.createBoard(request);
     }
