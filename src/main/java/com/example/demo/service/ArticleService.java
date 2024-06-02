@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.Exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +36,17 @@ public class ArticleService {
 
     public ArticleResponse getById(Long id) {
         Article article = articleRepository.findById(id);
+        if (article == null) {
+            throw new ArticleNotFound("게시글을 찾을 수 없습니다.");
+        }
         Member member = memberRepository.findById(article.getAuthorId());
+        if (member == null) {
+            throw new MemberNotFound("사용자를 찾을 수 없습니다.");
+        }
         Board board = boardRepository.findById(article.getBoardId());
+        if (board == null) {
+            throw new BoardNotFound("게시판을 찾을 수 없습니다.");
+        }
         return ArticleResponse.of(article, member, board);
     }
 
@@ -45,7 +55,13 @@ public class ArticleService {
         return articles.stream()
             .map(article -> {
                 Member member = memberRepository.findById(article.getAuthorId());
+                if (member == null) {
+                    throw new MemberNotFound("사용자를 찾을 수 없습니다.");
+                }
                 Board board = boardRepository.findById(article.getBoardId());
+                if (board == null) {
+                    throw new BoardNotFound("게시판을 찾을 수 없습니다.");
+                }
                 return ArticleResponse.of(article, member, board);
             })
             .toList();
@@ -53,25 +69,43 @@ public class ArticleService {
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
+        Member member = memberRepository.findById(request.authorId());
+        if (member == null) {
+            throw new FailMember("사용자를 찾을 수 없습니다.");
+        }
+        Board board = boardRepository.findById(request.boardId());
+        if (board == null) {
+            throw new FailBoard("게시판을 찾을 수 없습니다.");
+        }
+
         Article article = new Article(
             request.authorId(),
             request.boardId(),
             request.title(),
             request.description()
         );
+
         Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
+
         return ArticleResponse.of(saved, member, board);
     }
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
+        Board board = boardRepository.findById(request.boardId());
+        if (board == null) {
+            throw new FailBoard("게시판을 찾을 수 없습니다.");
+        }
+
         Article article = articleRepository.findById(id);
+
         article.update(request.boardId(), request.title(), request.description());
         Article updated = articleRepository.update(article);
+
         Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+        if (member == null) {
+            throw new FailMember("사용자를 찾을 수 없습니다.");
+        }
         return ArticleResponse.of(article, member, board);
     }
 

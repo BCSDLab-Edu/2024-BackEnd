@@ -2,7 +2,10 @@ package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.Exception.MemberNotFound;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,7 +34,7 @@ public class MemberRepositoryJdbc implements MemberRepository {
     public List<Member> findAll() {
         return jdbcTemplate.query("""
             SELECT id, name, email, password
-            FROM member
+            FROM members
             """, memberRowMapper);
     }
 
@@ -72,8 +75,18 @@ public class MemberRepositoryJdbc implements MemberRepository {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("""
-            DELETE FROM member
+            DELETE FROM members
             WHERE id = ?
             """, id);
+    }
+
+    @Override
+    public boolean existByEmail(String email) {
+        Integer count=jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM members
+                WHERE email=?
+                """,Integer.class,email);
+        return count!=null&&count>0;
     }
 }

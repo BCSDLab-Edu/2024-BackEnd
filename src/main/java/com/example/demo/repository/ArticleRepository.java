@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.demo.domain.Article;
 
@@ -19,4 +20,8 @@ public interface ArticleRepository {
     Article update(Article article);
 
     void deleteById(Long id);
+
+    boolean existByAuthorId(Long authorId);
+
+    boolean existByBoardId(Long boardId);
 }

@@ -3,6 +3,7 @@ package com.example.demo.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Article;
@@ -66,5 +67,15 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     @Override
     public void deleteById(Long id) {
         articles.remove(id);
+    }
+
+    @Override
+    public boolean existByAuthorId(Long authorId) {
+        return false;
+    }
+
+    @Override
+    public boolean existByBoardId(Long boardId) {
+        return false;
     }
 }

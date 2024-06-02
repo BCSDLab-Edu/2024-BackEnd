@@ -2,7 +2,10 @@ package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.Exception.ArticleNotFound;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,10 +62,9 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
     @Override
     public Article findById(Long id) {
         return jdbcTemplate.queryForObject("""
-            SELECT id,  board_id,  author_id,  title,  content,  created_date,  modified_date
-            FROM article
-            WHERE id = ?
-            """, articleRowMapper, id);
+                    SELECT id,  board_id,  author_id,  title,  content,  created_date,  modified_date
+                    FROM article
+                    WHERE id = ?""", articleRowMapper, id);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
                     INSERT INTO article (board_id, author_id, title, content)
                     VALUES (?, ?, ?, ?)
                     """,
-                new String[]{"id"});
+                    new String[]{"id"});
             ps.setLong(1, article.getBoardId());
             ps.setLong(2, article.getAuthorId());
             ps.setString(3, article.getTitle());
@@ -90,10 +92,10 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
                 SET board_id = ?, title = ?, content = ?
                 WHERE id = ?
                 """,
-            article.getBoardId(),
-            article.getTitle(),
-            article.getContent(),
-            article.getId()
+                article.getBoardId(),
+                article.getTitle(),
+                article.getContent(),
+                article.getId()
         );
         return findById(article.getId());
     }
@@ -104,5 +106,25 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
             DELETE FROM article
             WHERE id = ?
             """, id);
+    }
+
+    @Override
+    public boolean existByAuthorId(Long authorId) {
+        Integer count=jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM article
+                WhERE author_id=?
+                """,Integer.class,authorId);
+        return count !=null && count>0;
+    }
+
+    @Override
+    public boolean existByBoardId(Long boardId) {
+        Integer count =jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM article
+                WHERE author_id=?
+                """,Integer.class,boardId);
+        return count !=null && count>0;
     }
 }
