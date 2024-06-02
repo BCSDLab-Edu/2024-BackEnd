@@ -2,8 +2,10 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.domain.Article;
 import com.example.demo.exception.errorcode.CommonErrorCode;
 import com.example.demo.exception.exception.RestApiException;
+import com.example.demo.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +20,11 @@ import com.example.demo.repository.BoardRepository;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ArticleRepository articleRepository;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, ArticleRepository articleRepository) {
         this.boardRepository = boardRepository;
+        this.articleRepository = articleRepository;
     }
 
     public List<BoardResponse> getBoards() {
@@ -49,6 +53,14 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long id) {
+        Boolean isArticleExist = articleRepository
+                .findAllByBoardId(id)
+                .stream()
+                .findAny()
+                .isPresent();
+        if(isArticleExist) {
+            throw new RestApiException(CommonErrorCode.DELETE_ARTICLE_EXIST_IN_BOARD);
+        }
         boardRepository.deleteById(id);
     }
 
