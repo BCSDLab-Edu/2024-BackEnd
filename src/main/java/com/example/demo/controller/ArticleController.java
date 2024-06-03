@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +22,8 @@ import com.example.demo.controller.dto.request.ArticleCreateRequest;
 import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.controller.dto.request.ArticleUpdateRequest;
 import com.example.demo.service.ArticleService;
+
+import javax.xml.crypto.Data;
 
 @RestController
 public class ArticleController {
@@ -54,7 +57,7 @@ public class ArticleController {
         try {
             ArticleResponse response = articleService.create(request);
             return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
-        }catch (Exception SQLIntegrityConstraintViolationException){
+        }catch (DataIntegrityViolationException e){
             final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }
@@ -68,7 +71,7 @@ public class ArticleController {
         try {
             ArticleResponse response = articleService.update(id, request);
             return ResponseEntity.ok(response);
-        }catch (Exception DataIntegrityViolationException){
+        }catch (DataIntegrityViolationException e){
             System.out.println();
             final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));

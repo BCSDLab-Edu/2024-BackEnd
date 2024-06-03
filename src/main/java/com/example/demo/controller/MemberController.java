@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,7 +60,7 @@ public class MemberController {
         try {
             MemberResponse response = memberService.update(id, request);
             return ResponseEntity.ok(response);
-        }catch (Exception DuplicateKeyException){
+        }catch (DuplicateKeyException e){
             final ErrorResponse response = ErrorResponse.of(ErrorCode.EMAIL_DUPLICATION);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }
@@ -71,7 +73,7 @@ public class MemberController {
         try {
             memberService.delete(id);
             return ResponseEntity.noContent().build();
-        }catch (Exception DataIntegrityViolationException){
+        }catch (DataIntegrityViolationException e){
             final ErrorResponse response = ErrorResponse.of(ErrorCode.ARTICLE_EXIST);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }

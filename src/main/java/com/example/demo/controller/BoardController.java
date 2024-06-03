@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -62,7 +63,7 @@ public class BoardController {
         try {
             boardService.deleteBoard(id);
             return ResponseEntity.noContent().build();
-        }catch (Exception DataIntegrityViolationException){
+        }catch (DataIntegrityViolationException e){
             final ErrorResponse response = ErrorResponse.of(ErrorCode.BOARD_EXIST);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }
