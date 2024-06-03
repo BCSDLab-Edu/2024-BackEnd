@@ -1,10 +1,10 @@
 package com.example.demo.controller.dto.request;
 
 public record ArticleCreateRequest(
-    Long authorId,
-    Long boardId,
+    Long author_id,
+    Long board_id,
     String title,
-    String description
+    String content
 ) {
 
 }

@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -70,17 +71,17 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("""
-                    INSERT INTO article (board_id, author_id, title, content)
+                    INSERT INTO article (author_id, board_id, title, content)
                     VALUES (?, ?, ?, ?)
                     """,
                 new String[]{"id"});
-            ps.setLong(1, article.getBoardId());
-            ps.setLong(2, article.getAuthorId());
+            ps.setLong(1, article.getAuthorId());
+            ps.setLong(2, article.getBoardId());
             ps.setString(3, article.getTitle());
             ps.setString(4, article.getContent());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     @Override

@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
 import java.net.URI;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
+import com.example.demo.controller.Error.ErrorCode;
+import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,20 +48,31 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public ResponseEntity<ArticleResponse> crateArticle(
+    public ResponseEntity<?> createArticle(
         @RequestBody ArticleCreateRequest request
     ) {
-        ArticleResponse response = articleService.create(request);
-        return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
+        try {
+            ArticleResponse response = articleService.create(request);
+            return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
+        }catch (Exception SQLIntegrityConstraintViolationException){
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+        }
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<ArticleResponse> updateArticle(
+    public ResponseEntity<?> updateArticle(
         @PathVariable Long id,
         @RequestBody ArticleUpdateRequest request
     ) {
-        ArticleResponse response = articleService.update(id, request);
-        return ResponseEntity.ok(response);
+        try {
+            ArticleResponse response = articleService.update(id, request);
+            return ResponseEntity.ok(response);
+        }catch (Exception DataIntegrityViolationException){
+            System.out.println();
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+        }
     }
 
     @DeleteMapping("/articles/{id}")

@@ -2,6 +2,9 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.controller.Error.ErrorCode;
+import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,19 +51,29 @@ public class MemberController {
     }
 
     @PutMapping("/members/{id}")
-    public ResponseEntity<MemberResponse> updateMember(
+    public ResponseEntity<?> updateMember(
         @PathVariable Long id,
         @RequestBody MemberUpdateRequest request
     ) {
-        MemberResponse response = memberService.update(id, request);
-        return ResponseEntity.ok(response);
+        try {
+            MemberResponse response = memberService.update(id, request);
+            return ResponseEntity.ok(response);
+        }catch (Exception DuplicateKeyException){
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.EMAIL_DUPLICATION);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+        }
     }
 
     @DeleteMapping("/members/{id}")
-    public ResponseEntity<Void> deleteMember(
+    public ResponseEntity<?> deleteMember(
         @PathVariable Long id
     ) {
-        memberService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            memberService.delete(id);
+            return ResponseEntity.noContent().build();
+        }catch (Exception DataIntegrityViolationException){
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.ARTICLE_EXIST);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+        }
     }
 }

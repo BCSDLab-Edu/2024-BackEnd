@@ -54,10 +54,10 @@ public class ArticleService {
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
         Article article = new Article(
-            request.authorId(),
-            request.boardId(),
+            request.author_id(),
+            request.board_id(),
             request.title(),
-            request.description()
+            request.content()
         );
         Article saved = articleRepository.insert(article);
         Member member = memberRepository.findById(saved.getAuthorId());

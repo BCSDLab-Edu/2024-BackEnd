@@ -2,6 +2,9 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.controller.Error.ErrorCode;
+import com.example.demo.controller.Error.ErrorResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,10 +56,16 @@ public class BoardController {
     }
 
     @DeleteMapping("/boards/{id}")
-    public ResponseEntity<Void> deleteBoard(
+    public ResponseEntity<?> deleteBoard(
         @PathVariable Long id
     ) {
-        boardService.deleteBoard(id);
-        return ResponseEntity.noContent().build();
+        try {
+            boardService.deleteBoard(id);
+            return ResponseEntity.noContent().build();
+        }catch (Exception DataIntegrityViolationException){
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.BOARD_EXIST);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+        }
+
     }
 }
