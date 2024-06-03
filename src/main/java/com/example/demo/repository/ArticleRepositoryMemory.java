@@ -48,6 +48,14 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     public Article findById(Long id) {
         return articles.getOrDefault(id, null);
     }
+    @Override
+    public Article findByBoardId(Long id) {
+        return articles.getOrDefault(id, null);
+    }
+    @Override
+    public Article findByAuthorId(Long id) {
+        return articles.getOrDefault(id, null);
+    }
 
     @Override
     public Article insert(Article article) {

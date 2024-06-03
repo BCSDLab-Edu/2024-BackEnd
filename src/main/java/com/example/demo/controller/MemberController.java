@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,14 +36,22 @@ public class MemberController {
     public ResponseEntity<MemberResponse> getMember(
         @PathVariable Long id
     ) {
-        MemberResponse response = memberService.getById(id);
-        return ResponseEntity.ok(response);
+        try {
+            MemberResponse response = memberService.getById(id);
+            return ResponseEntity.ok(response);
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> create(
         @RequestBody MemberCreateRequest request
     ) {
+        if (memberService.isNullExist(request)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
     }
@@ -52,6 +61,10 @@ public class MemberController {
         @PathVariable Long id,
         @RequestBody MemberUpdateRequest request
     ) {
+        if (memberService.isEmailExist(request.email())) {
+            return ResponseEntity.status(409).build();
+        }
+
         MemberResponse response = memberService.update(id, request);
         return ResponseEntity.ok(response);
     }
@@ -60,6 +73,9 @@ public class MemberController {
     public ResponseEntity<Void> deleteMember(
         @PathVariable Long id
     ) {
+        if (memberService.isExistArticle(id)) {
+            return ResponseEntity.badRequest().build();
+        }
         memberService.delete(id);
         return ResponseEntity.noContent().build();
     }

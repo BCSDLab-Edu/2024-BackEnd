@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.controller.dto.request.ArticleCreateRequest;
+import com.example.demo.repository.ArticleRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +19,11 @@ import com.example.demo.repository.BoardRepository;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ArticleRepository articleRepository;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, ArticleRepository articleRepository) {
         this.boardRepository = boardRepository;
+        this.articleRepository = articleRepository;
     }
 
     public List<BoardResponse> getBoards() {
@@ -50,5 +55,26 @@ public class BoardService {
         board.update(request.name());
         Board updated = boardRepository.update(board);
         return BoardResponse.from(updated);
+    }
+
+
+    public boolean isNullExist(BoardCreateRequest request) {
+        try{
+            if (request.name() == null) return true;
+            return false;
+        }catch(EmptyResultDataAccessException e)
+        {
+            return true;
+        }
+    }
+
+    public boolean isExistArticle(long board_id) {
+        try{
+            if (!(articleRepository.findAllByBoardId(board_id).isEmpty())) return true;
+            return false;
+        }catch(EmptyResultDataAccessException e)
+        {
+            return false;
+        }
     }
 }

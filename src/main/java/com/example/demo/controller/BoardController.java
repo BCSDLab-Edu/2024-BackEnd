@@ -1,7 +1,11 @@
 package com.example.demo.controller;
 
+import java.net.URI;
 import java.util.List;
 
+import com.example.demo.controller.dto.response.ArticleResponse;
+import com.example.demo.controller.dto.response.MemberResponse;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,17 +35,27 @@ public class BoardController {
     }
 
     @GetMapping("/boards/{id}")
-    public BoardResponse getBoard(
+    public ResponseEntity<BoardResponse> getBoard(
         @PathVariable Long id
     ) {
-        return boardService.getBoardById(id);
+        try {
+            BoardResponse response = boardService.getBoardById(id);
+            return ResponseEntity.ok(response);
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/boards")
-    public BoardResponse createBoard(
+    public ResponseEntity<BoardResponse> createBoard(
         @RequestBody BoardCreateRequest request
     ) {
-        return boardService.createBoard(request);
+        if (boardService.isNullExist(request)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        BoardResponse response = boardService.createBoard(request);
+        return ResponseEntity.created(URI.create("/boards/" + response.id())).body(response);
     }
 
     @PutMapping("/boards/{id}")
@@ -56,6 +70,9 @@ public class BoardController {
     public ResponseEntity<Void> deleteBoard(
         @PathVariable Long id
     ) {
+        if (boardService.isExistArticle(id)) {
+            return ResponseEntity.badRequest().build();
+        }
         boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();
     }

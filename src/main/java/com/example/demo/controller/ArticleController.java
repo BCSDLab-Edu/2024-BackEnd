@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import java.net.URI;
 import java.util.List;
 
+import com.example.demo.controller.dto.response.MemberResponse;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +42,22 @@ public class ArticleController {
     public ResponseEntity<ArticleResponse> getArticle(
         @PathVariable Long id
     ) {
-        ArticleResponse response = articleService.getById(id);
-        return ResponseEntity.ok(response);
+        try {
+            ArticleResponse response = articleService.getById(id);
+            return ResponseEntity.ok(response);
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/articles")
     public ResponseEntity<ArticleResponse> crateArticle(
         @RequestBody ArticleCreateRequest request
     ) {
+        if (articleService.isMemberAndBoardExist(request.boardId(), request.authorId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
         ArticleResponse response = articleService.create(request);
         return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
     }
@@ -55,7 +66,11 @@ public class ArticleController {
     public ResponseEntity<ArticleResponse> updateArticle(
         @PathVariable Long id,
         @RequestBody ArticleUpdateRequest request
+
     ) {
+        if (!articleService.isIdExist(id)) {
+            return ResponseEntity.badRequest().build();
+        }
         ArticleResponse response = articleService.update(id, request);
         return ResponseEntity.ok(response);
     }

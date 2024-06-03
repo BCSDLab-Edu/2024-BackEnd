@@ -45,6 +45,16 @@ public class MemberRepositoryJdbc implements MemberRepository {
     }
 
     @Override
+    public Member findByEmail(String email) {
+        return jdbcTemplate.queryForObject("""
+            SELECT id, name, email, password
+            FROM member
+            WHERE email = ?
+            """, memberRowMapper, email);
+    }
+
+
+    @Override
     public Member insert(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,40 @@ public class ArticleService {
         Member member = memberRepository.findById(article.getAuthorId());
         Board board = boardRepository.findById(article.getBoardId());
         return ArticleResponse.of(article, member, board);
+    }
+
+    public boolean isIdExist(Long id) {
+        try{
+            Article article = articleRepository.findById(id);
+            return (article != null);
+        }catch(EmptyResultDataAccessException e)
+        {
+            return false;
+        }
+    }
+    public boolean isNullExist(ArticleCreateRequest request) {
+        try{
+            if (request.boardId() == null) return true;
+            if (request.authorId() == null) return true;
+            if (request.title() == null) return true;
+            if (request.description() == null) return true;
+            return false;
+        }catch(EmptyResultDataAccessException e)
+        {
+            return true;
+        }
+    }
+
+
+    public boolean isMemberAndBoardExist(Long board_id, Long member_id) {
+        try{
+            if (boardRepository.findById(board_id) == null) return true;
+            if (memberRepository.findById(member_id) == null) return true;
+            return false;
+        }catch(EmptyResultDataAccessException e)
+        {
+            return true;
+        }
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {

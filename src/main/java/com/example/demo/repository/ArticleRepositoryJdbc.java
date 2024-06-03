@@ -65,6 +65,22 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
             """, articleRowMapper, id);
     }
 
+    public Article findByBoardId(Long id) {
+        return jdbcTemplate.queryForObject("""
+            SELECT id,  board_id,  author_id,  title,  content,  created_date,  modified_date
+            FROM article
+            WHERE board_id = ?
+            """, articleRowMapper, id);
+    }
+
+    public Article findByAuthorId(Long id) {
+        return jdbcTemplate.queryForObject("""
+            SELECT id,  board_id,  author_id,  title,  content,  created_date,  modified_date
+            FROM article
+            WHERE author_id = ?
+            """, articleRowMapper, id);
+    }
+
     @Override
     public Article insert(Article article) {
         KeyHolder keyHolder = new GeneratedKeyHolder();

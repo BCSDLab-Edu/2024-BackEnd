@@ -33,6 +33,11 @@ public class MemberRepositoryMemory implements MemberRepository {
     }
 
     @Override
+    public Member findByEmail(String email) {
+        return members.getOrDefault(email, null);
+    }
+
+    @Override
     public Member insert(Member member) {
         long id = autoincrement.getAndIncrement();
         members.put(id, member);

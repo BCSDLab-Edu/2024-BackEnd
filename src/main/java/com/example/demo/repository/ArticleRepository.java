@@ -14,6 +14,10 @@ public interface ArticleRepository {
 
     Article findById(Long id);
 
+    Article findByBoardId(Long id);
+
+    Article findByAuthorId(Long id);
+
     Article insert(Article article);
 
     Article update(Article article);
