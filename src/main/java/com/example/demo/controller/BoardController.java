@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,9 +40,9 @@ public class BoardController {
 
     @PostMapping("/boards")
     public BoardResponse createBoard(
-        @RequestBody BoardCreateRequest request
+       @RequestBody BoardCreateRequest request
     ) {
-        return boardService.createBoard(request);
+        return boardService.create(request);
     }
 
     @PutMapping("/boards/{id}")
@@ -56,7 +57,7 @@ public class BoardController {
     public ResponseEntity<Void> deleteBoard(
         @PathVariable Long id
     ) {
-        boardService.deleteBoard(id);
+        boardService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

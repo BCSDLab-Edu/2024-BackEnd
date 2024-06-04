@@ -3,10 +3,14 @@ package com.example.demo.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.example.demo.domain.Article;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ArticleRepositoryMemory implements ArticleRepository {
 
     private static final Map<Long, Article> articles = new HashMap<>();
@@ -14,46 +18,33 @@ public class ArticleRepositoryMemory implements ArticleRepository {
 
     @Override
     public List<Article> findAll() {
-        return articles.entrySet().stream()
-            .map(it -> {
-                Article article = it.getValue();
-                article.setId(it.getKey());
-                return article;
-            }).toList();
+        return articles.values().stream().collect(Collectors.toList());
     }
 
     @Override
     public List<Article> findAllByBoardId(Long boardId) {
-        return articles.entrySet().stream()
-            .filter(it -> it.getValue().getBoardId().equals(boardId))
-            .map(it -> {
-                Article article = it.getValue();
-                article.setId(it.getKey());
-                return article;
-            }).toList();
+        return articles.values().stream()
+                .filter(article -> article.getBoardId().equals(boardId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Article> findAllByMemberId(Long memberId) {
-        return articles.entrySet().stream()
-            .filter(it -> it.getValue().getAuthorId().equals(memberId))
-            .map(it -> {
-                Article article = it.getValue();
-                article.setId(it.getKey());
-                return article;
-            }).toList();
+        return articles.values().stream()
+                .filter(article -> article.getAuthorId().equals(memberId))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Article findById(Long id) {
-        return articles.getOrDefault(id, null);
+    public Optional<Article> findById(Long id) {
+        return Optional.ofNullable(articles.get(id));
     }
 
     @Override
     public Article insert(Article article) {
         long id = autoincrement.getAndIncrement();
-        articles.put(id, article);
         article.setId(id);
+        articles.put(id, article);
         return article;
     }
 
@@ -66,5 +57,10 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     @Override
     public void deleteById(Long id) {
         articles.remove(id);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return articles.containsKey(id);
     }
 }

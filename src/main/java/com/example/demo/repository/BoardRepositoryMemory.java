@@ -3,38 +3,37 @@ package com.example.demo.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
 import com.example.demo.domain.Board;
+import org.springframework.stereotype.Repository;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
+@Repository
 public class BoardRepositoryMemory implements BoardRepository {
 
     private static final Map<Long, Board> boards = new HashMap<>();
     private static final AtomicLong autoincrement = new AtomicLong(1);
 
-    static {
-        // 1번 게시판을 미리 만들어둔다.
-        boards.put(autoincrement.getAndIncrement(), new Board("자유게시판"));
-    }
-
     @Override
     public List<Board> findAll() {
-        return boards.entrySet().stream()
-            .map(it -> {
-                Board board = it.getValue();
-                board.setId(it.getKey());
-                return board;
-            }).toList();
+        return boards.values().stream().collect(Collectors.toList());
+    }
+    @Override
+    public Optional<Board> findById(Long id) {
+        return Optional.ofNullable(boards.get(id));
     }
 
     @Override
-    public Board findById(Long id) {
-        return boards.getOrDefault(id, null);
-    }
-
-    @Override
-    public Board insert(Board board) {
-        boards.put(autoincrement.getAndIncrement(), board);
+    public Board save(Board board) {
+        if (board.getId() == null) {
+            long id = autoincrement.getAndIncrement();
+            board.setId(id);
+            boards.put(id, board);
+        } else {
+            boards.put(board.getId(), board);
+        }
         return board;
     }
 
@@ -44,7 +43,7 @@ public class BoardRepositoryMemory implements BoardRepository {
     }
 
     @Override
-    public Board update(Board board) {
-        return boards.put(board.getId(), board);
+    public boolean existsById(Long id) {
+        return boards.containsKey(id);
     }
 }

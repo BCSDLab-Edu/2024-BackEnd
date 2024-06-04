@@ -1,17 +1,17 @@
 package com.example.demo.repository;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Board;
 
 @Repository
+@Primary
 public class BoardRepositoryJdbc implements BoardRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -20,11 +20,6 @@ public class BoardRepositoryJdbc implements BoardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static final RowMapper<Board> boardRowMapper = (rs, rowNum) -> new Board(
-        rs.getLong("id"),
-        rs.getString("name")
-    );
-
     @Override
     public List<Board> findAll() {
         return jdbcTemplate.query("""
@@ -32,41 +27,45 @@ public class BoardRepositoryJdbc implements BoardRepository {
             FROM board
             """, boardRowMapper);
     }
+    private static final RowMapper<Board> boardRowMapper = (rs, rowNum) -> new Board(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     @Override
-    public Board findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Board> findById(Long id) {
+        List<Board> boards = jdbcTemplate.query("""
             SELECT id, name
             FROM board
             WHERE id = ?
             """, boardRowMapper, id);
+        return boards.stream().findFirst();
     }
 
     @Override
-    public Board insert(Board board) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO board (name) VALUES (?)
-                """, new String[]{"id"});
-            ps.setString(1, board.getName());
-            return ps;
-        }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+    public Board save(Board board) {
+        jdbcTemplate.update("""
+            INSERT INTO board (name)
+            VALUES (?)
+            """, board.getName());
+        return board;
     }
 
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("""
-            DELETE FROM board WHERE id = ?
+            DELETE FROM board
+            WHERE id = ?
             """, id);
     }
 
     @Override
-    public Board update(Board board) {
-        return jdbcTemplate.queryForObject("""
-            UPDATE board SET name = ? WHERE id = ?
-            """, boardRowMapper, board.getName(), board.getId()
-        );
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject("""
+            SELECT COUNT(*)
+            FROM board
+            WHERE id = ?
+            """, Integer.class, id);
+        return count != null && count > 0;
     }
 }

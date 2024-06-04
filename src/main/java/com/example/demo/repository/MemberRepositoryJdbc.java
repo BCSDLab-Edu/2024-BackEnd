@@ -1,12 +1,10 @@
 package com.example.demo.repository;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Member;
@@ -21,10 +19,10 @@ public class MemberRepositoryJdbc implements MemberRepository {
     }
 
     private static final RowMapper<Member> memberRowMapper = (rs, rowNum) -> new Member(
-        rs.getLong("id"),
-        rs.getString("name"),
-        rs.getString("email"),
-        rs.getString("password")
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("email"),
+            rs.getString("password")
     );
 
     @Override
@@ -36,27 +34,22 @@ public class MemberRepositoryJdbc implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Member> findById(Long id) {
+        List<Member> members = jdbcTemplate.query("""
             SELECT id, name, email, password
             FROM member
             WHERE id = ?
             """, memberRowMapper, id);
+        return members.stream().findFirst();
     }
 
     @Override
     public Member insert(Member member) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO member (name, email, password) VALUES (?, ?, ?)
-                """, new String[]{"id"});
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getEmail());
-            ps.setString(3, member.getPassword());
-            return ps;
-        }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        jdbcTemplate.update("""
+            INSERT INTO member (name, email, password)
+            VALUES (?, ?, ?)
+            """, member.getName(), member.getEmail(), member.getPassword());
+        return member;
     }
 
     @Override
@@ -66,7 +59,7 @@ public class MemberRepositoryJdbc implements MemberRepository {
             SET name = ?, email = ?
             WHERE id = ?
             """, member.getName(), member.getEmail(), member.getId());
-        return findById(member.getId());
+        return member;
     }
 
     @Override
@@ -75,5 +68,25 @@ public class MemberRepositoryJdbc implements MemberRepository {
             DELETE FROM member
             WHERE id = ?
             """, id);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        Integer count = jdbcTemplate.queryForObject("""
+            SELECT COUNT(*)
+            FROM member
+            WHERE email = ?
+            """, Integer.class, email);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject("""
+            SELECT COUNT(*)
+            FROM member
+            WHERE id = ?
+            """, Integer.class, id);
+        return count != null && count > 0;
     }
 }
