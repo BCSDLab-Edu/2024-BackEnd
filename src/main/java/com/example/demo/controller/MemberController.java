@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,23 +34,23 @@ public class MemberController {
     }
 
     @GetMapping("/members/{id}")
-    public ResponseEntity<MemberResponse> getMember(
+    public ResponseEntity getMember(
         @PathVariable Long id
     ) {
         try {
             MemberResponse response = memberService.getById(id);
             return ResponseEntity.ok(response);
         } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찾으려는 Member가 존재하지 않습니다.");
         }
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> create(
+    public ResponseEntity create(
         @RequestBody MemberCreateRequest request
     ) {
         if (memberService.isNullExist(request)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("null값은 허용되지 않습니다.");
         }
 
         MemberResponse response = memberService.create(request);
@@ -57,12 +58,12 @@ public class MemberController {
     }
 
     @PutMapping("/members/{id}")
-    public ResponseEntity<MemberResponse> updateMember(
+    public ResponseEntity updateMember(
         @PathVariable Long id,
         @RequestBody MemberUpdateRequest request
     ) {
         if (memberService.isEmailExist(request.email())) {
-            return ResponseEntity.status(409).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일이 이미 존재합니다.");
         }
 
         MemberResponse response = memberService.update(id, request);
@@ -70,11 +71,11 @@ public class MemberController {
     }
 
     @DeleteMapping("/members/{id}")
-    public ResponseEntity<Void> deleteMember(
+    public ResponseEntity deleteMember(
         @PathVariable Long id
     ) {
         if (memberService.isExistArticle(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 작성자는 작성한 글이 존재하므로 삭제할 수 없습니다.");
         }
         memberService.delete(id);
         return ResponseEntity.noContent().build();

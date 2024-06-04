@@ -39,23 +39,27 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/{id}")
-    public ResponseEntity<ArticleResponse> getArticle(
+    public ResponseEntity getArticle(
         @PathVariable Long id
     ) {
         try {
             ArticleResponse response = articleService.getById(id);
             return ResponseEntity.ok(response);
         } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찾으려는 Article이 존재하지 않습니다.");
         }
     }
 
     @PostMapping("/articles")
-    public ResponseEntity<ArticleResponse> crateArticle(
+    public ResponseEntity crateArticle(
         @RequestBody ArticleCreateRequest request
     ) {
+        if (articleService.isNullExist(request)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("null값은 허용되지 않습니다.");
+        }
+
         if (articleService.isMemberAndBoardExist(request.boardId(), request.authorId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("작성자나 계시판이 존재하지 않습니다.");
         }
 
         ArticleResponse response = articleService.create(request);
@@ -63,13 +67,13 @@ public class ArticleController {
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<ArticleResponse> updateArticle(
+    public ResponseEntity updateArticle(
         @PathVariable Long id,
         @RequestBody ArticleUpdateRequest request
 
     ) {
         if (!articleService.isIdExist(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정하려는 게시글의 Id가 존재하지 않습니다.");
         }
         ArticleResponse response = articleService.update(id, request);
         return ResponseEntity.ok(response);

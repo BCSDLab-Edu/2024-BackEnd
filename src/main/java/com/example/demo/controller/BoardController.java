@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.controller.dto.response.MemberResponse;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,23 +36,23 @@ public class BoardController {
     }
 
     @GetMapping("/boards/{id}")
-    public ResponseEntity<BoardResponse> getBoard(
+    public ResponseEntity getBoard(
         @PathVariable Long id
     ) {
         try {
             BoardResponse response = boardService.getBoardById(id);
             return ResponseEntity.ok(response);
         } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찾으려는 Board가 존재하지 않습니다.");
         }
     }
 
     @PostMapping("/boards")
-    public ResponseEntity<BoardResponse> createBoard(
+    public ResponseEntity createBoard(
         @RequestBody BoardCreateRequest request
     ) {
         if (boardService.isNullExist(request)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("null값은 허용되지 않습니다.");
         }
 
         BoardResponse response = boardService.createBoard(request);
@@ -67,11 +68,11 @@ public class BoardController {
     }
 
     @DeleteMapping("/boards/{id}")
-    public ResponseEntity<Void> deleteBoard(
+    public ResponseEntity deleteBoard(
         @PathVariable Long id
     ) {
         if (boardService.isExistArticle(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시판은 작성한 글이 존재하므로 삭제할 수 없습니다.");
         }
         boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();
