@@ -23,8 +23,8 @@ public class BoardService {
 
     public List<BoardResponse> getBoards() {
         return boardRepository.findAll().stream()
-            .map(BoardResponse::from)
-            .toList();
+                .map(BoardResponse::from)
+                .toList();
     }
 
     public BoardResponse getBoardById(Long id) {

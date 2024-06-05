@@ -2,6 +2,11 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.controller.Error.ErrorCode;
+import com.example.demo.controller.Error.ErrorResponse;
+import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,29 +37,30 @@ public class BoardController {
 
     @GetMapping("/boards/{id}")
     public BoardResponse getBoard(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         return boardService.getBoardById(id);
     }
 
     @PostMapping("/boards")
     public BoardResponse createBoard(
-        @RequestBody BoardCreateRequest request
+            @Valid
+            @RequestBody BoardCreateRequest request
     ) {
         return boardService.createBoard(request);
     }
 
     @PutMapping("/boards/{id}")
     public BoardResponse updateBoard(
-        @PathVariable Long id,
-        @RequestBody BoardUpdateRequest updateRequest
+            @PathVariable Long id,
+            @RequestBody BoardUpdateRequest updateRequest
     ) {
         return boardService.update(id, updateRequest);
     }
 
     @DeleteMapping("/boards/{id}")
-    public ResponseEntity<Void> deleteBoard(
-        @PathVariable Long id
+    public ResponseEntity<?> deleteBoard(
+            @PathVariable Long id
     ) {
         boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();

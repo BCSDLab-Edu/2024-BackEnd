@@ -1,10 +1,16 @@
 package com.example.demo.controller.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record ArticleCreateRequest(
-    Long authorId,
-    Long boardId,
-    String title,
-    String description
+        @NotNull
+        Long author_id,
+        @NotNull
+        Long board_id,
+        @NotNull
+        String title,
+        @NotNull
+        String content
 ) {
 
 }

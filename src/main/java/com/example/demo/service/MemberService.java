@@ -29,14 +29,14 @@ public class MemberService {
     public List<MemberResponse> getAll() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-            .map(MemberResponse::from)
-            .toList();
+                .map(MemberResponse::from)
+                .toList();
     }
 
     @Transactional
     public MemberResponse create(MemberCreateRequest request) {
         Member member = memberRepository.insert(
-            new Member(request.name(), request.email(), request.password())
+                new Member(request.name(), request.email(), request.password())
         );
         return MemberResponse.from(member);
     }

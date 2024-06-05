@@ -21,25 +21,25 @@ public class BoardRepositoryJdbc implements BoardRepository {
     }
 
     private static final RowMapper<Board> boardRowMapper = (rs, rowNum) -> new Board(
-        rs.getLong("id"),
-        rs.getString("name")
+            rs.getLong("id"),
+            rs.getString("name")
     );
 
     @Override
     public List<Board> findAll() {
         return jdbcTemplate.query("""
-            SELECT id, name
-            FROM board
-            """, boardRowMapper);
+                SELECT id, name
+                FROM board
+                """, boardRowMapper);
     }
 
     @Override
     public Board findById(Long id) {
         return jdbcTemplate.queryForObject("""
-            SELECT id, name
-            FROM board
-            WHERE id = ?
-            """, boardRowMapper, id);
+                SELECT id, name
+                FROM board
+                WHERE id = ?
+                """, boardRowMapper, id);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class BoardRepositoryJdbc implements BoardRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO board (name) VALUES (?)
-                """, new String[]{"id"});
+                    INSERT INTO board (name) VALUES (?)
+                    """, new String[]{"id"});
             ps.setString(1, board.getName());
             return ps;
         }, keyHolder);
@@ -58,15 +58,15 @@ public class BoardRepositoryJdbc implements BoardRepository {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("""
-            DELETE FROM board WHERE id = ?
-            """, id);
+                DELETE FROM board WHERE id = ?
+                """, id);
     }
 
     @Override
     public Board update(Board board) {
         return jdbcTemplate.queryForObject("""
-            UPDATE board SET name = ? WHERE id = ?
-            """, boardRowMapper, board.getName(), board.getId()
+                UPDATE board SET name = ? WHERE id = ?
+                """, boardRowMapper, board.getName(), board.getId()
         );
     }
 }

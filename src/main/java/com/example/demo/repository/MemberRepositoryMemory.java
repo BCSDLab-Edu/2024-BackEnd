@@ -20,11 +20,11 @@ public class MemberRepositoryMemory implements MemberRepository {
     @Override
     public List<Member> findAll() {
         return members.entrySet().stream()
-            .map(it -> {
-                Member member = it.getValue();
-                member.setId(it.getKey());
-                return member;
-            }).toList();
+                .map(it -> {
+                    Member member = it.getValue();
+                    member.setId(it.getKey());
+                    return member;
+                }).toList();
     }
 
     @Override
