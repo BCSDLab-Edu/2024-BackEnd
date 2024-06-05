@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
 import java.net.URI;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,6 @@ import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.controller.dto.request.ArticleUpdateRequest;
 import com.example.demo.service.ArticleService;
 
-import javax.xml.crypto.Data;
-
 @RestController
 public class ArticleController {
 
@@ -36,7 +34,7 @@ public class ArticleController {
 
     @GetMapping("/articles")
     public ResponseEntity<List<ArticleResponse>> getArticles(
-        @RequestParam Long boardId
+            @RequestParam Long boardId
     ) {
         List<ArticleResponse> response = articleService.getByBoardId(boardId);
         return ResponseEntity.ok(response);
@@ -44,7 +42,7 @@ public class ArticleController {
 
     @GetMapping("/articles/{id}")
     public ResponseEntity<ArticleResponse> getArticle(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         ArticleResponse response = articleService.getById(id);
         return ResponseEntity.ok(response);
@@ -52,35 +50,25 @@ public class ArticleController {
 
     @PostMapping("/articles")
     public ResponseEntity<?> createArticle(
-        @RequestBody ArticleCreateRequest request
+            @Valid
+            @RequestBody ArticleCreateRequest request
     ) {
-        try {
-            ArticleResponse response = articleService.create(request);
-            return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
-        }catch (DataIntegrityViolationException e){
-            final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
-        }
+        ArticleResponse response = articleService.create(request);
+        return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
     }
 
     @PutMapping("/articles/{id}")
     public ResponseEntity<?> updateArticle(
-        @PathVariable Long id,
-        @RequestBody ArticleUpdateRequest request
+            @PathVariable Long id,
+            @RequestBody ArticleUpdateRequest request
     ) {
-        try {
-            ArticleResponse response = articleService.update(id, request);
-            return ResponseEntity.ok(response);
-        }catch (DataIntegrityViolationException e){
-            System.out.println();
-            final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_EXIST_USER);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
-        }
+        ArticleResponse response = articleService.update(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/articles/{id}")
     public ResponseEntity<Void> updateArticle(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         articleService.delete(id);
         return ResponseEntity.noContent().build();

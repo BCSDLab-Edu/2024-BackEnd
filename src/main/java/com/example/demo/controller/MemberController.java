@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class MemberController {
 
     @GetMapping("/members/{id}")
     public ResponseEntity<MemberResponse> getMember(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         MemberResponse response = memberService.getById(id);
         return ResponseEntity.ok(response);
@@ -46,7 +47,8 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> create(
-        @RequestBody MemberCreateRequest request
+            @Valid
+            @RequestBody MemberCreateRequest request
     ) {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
@@ -54,27 +56,27 @@ public class MemberController {
 
     @PutMapping("/members/{id}")
     public ResponseEntity<?> updateMember(
-        @PathVariable Long id,
-        @RequestBody MemberUpdateRequest request
+            @PathVariable Long id,
+            @RequestBody MemberUpdateRequest request
     ) {
         try {
             MemberResponse response = memberService.update(id, request);
             return ResponseEntity.ok(response);
-        }catch (DuplicateKeyException e){
-            final ErrorResponse response = ErrorResponse.of(ErrorCode.EMAIL_DUPLICATION);
+        } catch (DuplicateKeyException e) {
+            final ErrorResponse response = ErrorResponse.from(ErrorCode.EMAIL_DUPLICATION);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }
     }
 
     @DeleteMapping("/members/{id}")
     public ResponseEntity<?> deleteMember(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         try {
             memberService.delete(id);
             return ResponseEntity.noContent().build();
-        }catch (DataIntegrityViolationException e){
-            final ErrorResponse response = ErrorResponse.of(ErrorCode.ARTICLE_EXIST);
+        } catch (DataIntegrityViolationException e) {
+            final ErrorResponse response = ErrorResponse.from(ErrorCode.ARTICLE_EXIST);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
         }
     }

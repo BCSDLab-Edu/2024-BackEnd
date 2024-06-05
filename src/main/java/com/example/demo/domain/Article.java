@@ -5,25 +5,25 @@ import java.time.LocalDateTime;
 public class Article {
 
     private Long id;
-    private Long authorId;
-    private Long boardId;
+    private Long author_id;
+    private Long board_id;
     private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public Article(
-        Long id,
-        Long authorId,
-        Long boardId,
-        String title,
-        String content,
-        LocalDateTime createdAt,
-        LocalDateTime modifiedAt
+            Long id,
+            Long authorId,
+            Long boardId,
+            String title,
+            String content,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
     ) {
         this.id = id;
-        this.authorId = authorId;
-        this.boardId = boardId;
+        this.author_id = authorId;
+        this.board_id = boardId;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -32,8 +32,8 @@ public class Article {
 
     public Article(Long authorId, Long boardId, String title, String content) {
         this.id = null;
-        this.authorId = authorId;
-        this.boardId = boardId;
+        this.author_id = authorId;
+        this.board_id = boardId;
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
@@ -41,7 +41,7 @@ public class Article {
     }
 
     public void update(Long boardId, String title, String description) {
-        this.boardId = boardId;
+        this.board_id = boardId;
         this.title = title;
         this.content = description;
         this.modifiedAt = LocalDateTime.now();
@@ -59,12 +59,12 @@ public class Article {
         return id;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public Long getAuthor_id() {
+        return author_id;
     }
 
-    public Long getBoardId() {
-        return boardId;
+    public Long getBoard_id() {
+        return board_id;
     }
 
     public String getTitle() {

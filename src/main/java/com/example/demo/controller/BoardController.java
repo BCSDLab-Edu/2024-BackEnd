@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.demo.controller.Error.ErrorCode;
 import com.example.demo.controller.Error.ErrorResponse;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,37 +37,32 @@ public class BoardController {
 
     @GetMapping("/boards/{id}")
     public BoardResponse getBoard(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         return boardService.getBoardById(id);
     }
 
     @PostMapping("/boards")
     public BoardResponse createBoard(
-        @RequestBody BoardCreateRequest request
+            @Valid
+            @RequestBody BoardCreateRequest request
     ) {
         return boardService.createBoard(request);
     }
 
     @PutMapping("/boards/{id}")
     public BoardResponse updateBoard(
-        @PathVariable Long id,
-        @RequestBody BoardUpdateRequest updateRequest
+            @PathVariable Long id,
+            @RequestBody BoardUpdateRequest updateRequest
     ) {
         return boardService.update(id, updateRequest);
     }
 
     @DeleteMapping("/boards/{id}")
     public ResponseEntity<?> deleteBoard(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
-        try {
-            boardService.deleteBoard(id);
-            return ResponseEntity.noContent().build();
-        }catch (DataIntegrityViolationException e){
-            final ErrorResponse response = ErrorResponse.of(ErrorCode.BOARD_EXIST);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
-        }
-
+        boardService.deleteBoard(id);
+        return ResponseEntity.noContent().build();
     }
 }

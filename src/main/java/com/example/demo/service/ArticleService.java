@@ -24,9 +24,9 @@ public class ArticleService {
     private final BoardRepository boardRepository;
 
     public ArticleService(
-        ArticleRepository articleRepository,
-        MemberRepository memberRepository,
-        BoardRepository boardRepository
+            ArticleRepository articleRepository,
+            MemberRepository memberRepository,
+            BoardRepository boardRepository
     ) {
         this.articleRepository = articleRepository;
         this.memberRepository = memberRepository;
@@ -35,33 +35,33 @@ public class ArticleService {
 
     public ArticleResponse getById(Long id) {
         Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+        Member member = memberRepository.findById(article.getAuthor_id());
+        Board board = boardRepository.findById(article.getBoard_id());
         return ArticleResponse.of(article, member, board);
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {
         List<Article> articles = articleRepository.findAllByBoardId(boardId);
         return articles.stream()
-            .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                Board board = boardRepository.findById(article.getBoardId());
-                return ArticleResponse.of(article, member, board);
-            })
-            .toList();
+                .map(article -> {
+                    Member member = memberRepository.findById(article.getAuthor_id());
+                    Board board = boardRepository.findById(article.getBoard_id());
+                    return ArticleResponse.of(article, member, board);
+                })
+                .toList();
     }
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
         Article article = new Article(
-            request.author_id(),
-            request.board_id(),
-            request.title(),
-            request.content()
+                request.author_id(),
+                request.board_id(),
+                request.title(),
+                request.content()
         );
         Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
+        Member member = memberRepository.findById(saved.getAuthor_id());
+        Board board = boardRepository.findById(saved.getBoard_id());
         return ArticleResponse.of(saved, member, board);
     }
 
@@ -70,8 +70,8 @@ public class ArticleService {
         Article article = articleRepository.findById(id);
         article.update(request.boardId(), request.title(), request.description());
         Article updated = articleRepository.update(article);
-        Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+        Member member = memberRepository.findById(updated.getAuthor_id());
+        Board board = boardRepository.findById(article.getBoard_id());
         return ArticleResponse.of(article, member, board);
     }
 
