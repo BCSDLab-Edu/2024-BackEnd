@@ -205,6 +205,6 @@ $RECYCLE.BIN/
 *.lnk
 
 #비번 적힌 곳
-src/main/resources/application.yml
+application.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java
