@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -146,3 +146,4 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
         return count !=null && count>0;
     }
 }
+*/

@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -82,3 +82,4 @@ public class BoardRepositoryJdbc implements BoardRepository {
         );
     }
 }
+*/
