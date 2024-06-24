@@ -1,8 +1,16 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="board")
 public class Board {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="name", nullable=false)
     private String name;
 
     public Board(Long id, String name) {
@@ -12,6 +20,10 @@ public class Board {
 
     public Board(String name) {
         this.name = name;
+    }
+
+    public Board() {
+
     }
 
     public Long getId() {
