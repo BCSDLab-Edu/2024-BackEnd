@@ -23,7 +23,7 @@ public class ArticleRepositoryJpa implements ArticleRepository {
 
     @Override
     public List<Article> findAllByBoardId(Long boardId) {
-        TypedQuery<Article> query = em.createQuery("select a from Article a where a.boardId = :boardId", Article.class);
+        TypedQuery<Article> query = em.createQuery("select a from Article a where a.board.id = :boardId", Article.class);
         query.setParameter("boardId", boardId);
         return query.getResultList();
 
@@ -31,7 +31,7 @@ public class ArticleRepositoryJpa implements ArticleRepository {
 
     @Override
     public List<Article> findAllByMemberId(Long memberId) {
-        TypedQuery<Article> query = em.createQuery("select a from Article a where a.authorId = :authorId", Article.class);
+        TypedQuery<Article> query = em.createQuery("select a from Article a where a.member.id = :authorId", Article.class);
         query.setParameter("authorId", memberId);
         return query.getResultList();
     }

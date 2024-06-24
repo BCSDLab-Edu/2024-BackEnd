@@ -1,9 +1,6 @@
 package com.example.demo.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -12,15 +9,27 @@ public class Article {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "article_id")
     private Long id;
-    private Long authorId;
-    private Long boardId;
+//    private Long authorId;
+//    private Long boardId;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
+
     private String title;
     private String content;
+    @Column(name = "created_date")
     private LocalDateTime createdAt;
+    @Column(name = "modified_date")
     private LocalDateTime modifiedAt;
 
-    public Article(
+/*    public Article(
         Long id,
         Long authorId,
         Long boardId,
@@ -45,18 +54,31 @@ public class Article {
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
-    }
+    }*/
 
     public Article() {
 
     }
 
-    public void update(Long boardId, String title, String description) {
-        this.boardId = boardId;
+    public void update(Board board, String title, String description) {
+        this.board = board;
         this.title = title;
         this.content = description;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getArticles().add(this);
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+        board.getArticles().add(this);
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setId(Long id) {
@@ -71,13 +93,13 @@ public class Article {
         return id;
     }
 
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
+//    public Long getAuthorId() {
+//        return authorId;
+//    }
+//
+//    public Long getBoardId() {
+//        return boardId;
+//    }
 
     public String getTitle() {
         return title;
@@ -93,5 +115,31 @@ public class Article {
 
     public LocalDateTime getModifiedAt() {
         return modifiedAt;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    private void setTitle(String title) {
+        this.title = title;
+    }
+
+    private void setContent(String content) {
+        this.content = content;
+    }
+
+    public static Article createArticle(String title, String content, Member member, Board board) {
+        Article article = new Article();
+        article.setTitle(title);
+        article.setContent(content);
+        article.setMember(member);
+        article.setBoard(board);
+        article.setCreatedAt(LocalDateTime.now());
+        return article;
     }
 }

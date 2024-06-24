@@ -1,19 +1,21 @@
 package com.example.demo.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
     private String name;
     private String email;
     private String password;
+    @OneToMany(mappedBy = "member")
+    private List<Article> articles;
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
@@ -56,5 +58,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<Article> getArticles() {
+        return articles;
     }
 }
