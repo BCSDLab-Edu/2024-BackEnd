@@ -1,11 +1,19 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
-    private final String password;
+    private String password;
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
@@ -19,6 +27,11 @@ public class Member {
         this.email = email;
         this.password = password;
     }
+
+    public Member() {
+
+    }
+
 
     public void update(String name, String email) {
         this.name = name;

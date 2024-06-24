@@ -1,7 +1,12 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Board {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
@@ -12,6 +17,10 @@ public class Board {
 
     public Board(String name) {
         this.name = name;
+    }
+
+    public Board() {
+
     }
 
     public Long getId() {
