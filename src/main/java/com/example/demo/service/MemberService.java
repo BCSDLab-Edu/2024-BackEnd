@@ -31,13 +31,12 @@ public class MemberService {
 
     public MemberResponse getById(Long id) {
         Member member;
-
         try {
             member = memberRepository.findById(id);
         } catch(RuntimeException e) {
             throw new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST);
         }
-            return MemberResponse.from(member);
+        return MemberResponse.from(member);
     }
 
     public List<MemberResponse> getAll() {
@@ -73,14 +72,6 @@ public class MemberService {
     public MemberResponse update(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id);
         member.update(request.name(), request.email());
-        try {
-            memberRepository.update(member);
-        } catch(RuntimeException e) {
-            String errorMessage = e.getMessage();
-            if(errorMessage.contains("Duplicate entry")) {
-                throw new RestApiException(CommonErrorCode.EMAIL_ALREADY_EXIST);
-            }
-        }
         return MemberResponse.from(member);
     }
 }

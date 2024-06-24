@@ -22,21 +22,26 @@ public class BoardRepositoryJpa implements BoardRepository{
 
     @Override
     public List<Board> findAll() {
-        return null;
+        List<Board> boards = em.createQuery("select b from Board b", Board.class).getResultList();
+        return boards;
     }
 
     @Override
     public Board insert(Board board) {
-        return null;
-    }
-
-    @Override
-    public void deleteById(Long id) {
-
+        em.persist(board);
+        return board;
     }
 
     @Override
     public Board update(Board board) {
-        return null;
+        Board findBoard = em.find(Board.class, board.getId());
+        findBoard.update(board.getName());
+        return findBoard;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Board board = em.find(Board.class, id);
+        em.remove(board);
     }
 }

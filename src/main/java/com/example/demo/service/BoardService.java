@@ -68,7 +68,6 @@ public class BoardService {
     public BoardResponse update(Long id, BoardUpdateRequest request) {
         Board board = boardRepository.findById(id);
         board.update(request.name());
-        Board updated = boardRepository.update(board);
-        return BoardResponse.from(updated);
+        return BoardResponse.from(board);
     }
 }
