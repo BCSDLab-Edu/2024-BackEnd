@@ -89,9 +89,9 @@ public class ArticleService {
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(id);
         article.update(request.boardId(), request.title(), request.description());
-        Article updated = articleRepository.update(article);
+//        Article updated = articleRepository.update(article);
 
-        Member member = memberRepository.findById(updated.getAuthorId());
+        Member member = memberRepository.findById(article.getAuthorId());
 
         Board board;
         try {

@@ -38,12 +38,14 @@ public class ArticleRepositoryJpa implements ArticleRepository {
 
     @Override
     public Article findById(Long id) {
-        return null;
+        Article article = em.find(Article.class, id);
+        return article;
     }
 
     @Override
     public Article insert(Article article) {
-        return null;
+        em.persist(article);
+        return article;
     }
 
     @Override
@@ -53,6 +55,7 @@ public class ArticleRepositoryJpa implements ArticleRepository {
 
     @Override
     public void deleteById(Long id) {
-
+        Article article = em.find(Article.class, id);
+        em.remove(article);
     }
 }
