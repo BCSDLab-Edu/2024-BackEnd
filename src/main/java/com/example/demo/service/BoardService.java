@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.example.demo.Exception.ArticleExist;
 import com.example.demo.Exception.BoardNotFound;
-import com.example.demo.repository.ArticleRepositoryJdbc;
+import com.example.demo.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +19,11 @@ import com.example.demo.repository.BoardRepository;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final ArticleRepositoryJdbc articleRepositoryJdbc;
+    private final ArticleRepository articleRepository;
 
-    public BoardService(BoardRepository boardRepository, ArticleRepositoryJdbc articleRepositoryJdbc) {
+    public BoardService(BoardRepository boardRepository, ArticleRepository articleRepository) {
         this.boardRepository = boardRepository;
-        this.articleRepositoryJdbc = articleRepositoryJdbc;
+        this.articleRepository = articleRepository;
     }
 
     public List<BoardResponse> getBoards() {
@@ -46,7 +46,7 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long id) {
-        if (articleRepositoryJdbc.existByBoardId(id))
+        if (articleRepository.existByBoardId(id))
             throw new ArticleExist("게시물이 존재합니다.");
         boardRepository.deleteById(id);
     }
