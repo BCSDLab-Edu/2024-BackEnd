@@ -1,15 +1,35 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "article")
 public class Article {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "author_id", nullable = false)
     private Long authorId;
+
+    @Column(name = "board_id", nullable = false)
     private Long boardId;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Lob
+    @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name = "created_date", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
+
+    @Column(name = "modified_date", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime modifiedAt;
 
     public Article(
@@ -36,23 +56,18 @@ public class Article {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
-        this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
     }
+
+    protected Article() {}
 
     public void update(Long boardId, String title, String description) {
         this.boardId = boardId;
         this.title = title;
         this.content = description;
-        this.modifiedAt = LocalDateTime.now();
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
     }
 
     public Long getId() {

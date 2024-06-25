@@ -3,6 +3,7 @@ package com.example.demo.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Board;
 
-@Repository
 public class BoardRepositoryJdbc implements BoardRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,11 +35,15 @@ public class BoardRepositoryJdbc implements BoardRepository {
 
     @Override
     public Board findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+        try {
+            return jdbcTemplate.queryForObject("""
             SELECT id, name
             FROM board
             WHERE id = ?
             """, boardRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

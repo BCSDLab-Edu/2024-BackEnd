@@ -1,16 +1,29 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "board", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name", name = "UK_BOARD_NAME")
+})
 public class Board {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    public Board(Long id, String name) {
-        this.id = id;
+    protected Board() {}
+
+    public Board(String name) {
         this.name = name;
     }
 
-    public Board(String name) {
+    public Board(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
