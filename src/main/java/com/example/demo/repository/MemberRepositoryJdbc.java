@@ -3,15 +3,19 @@ package com.example.demo.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+import com.example.demo.exception.ApplicationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Member;
 
-@Repository
+import static com.example.demo.exception.ErrorCode.*;
+
 public class MemberRepositoryJdbc implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -30,18 +34,22 @@ public class MemberRepositoryJdbc implements MemberRepository {
     @Override
     public List<Member> findAll() {
         return jdbcTemplate.query("""
-            SELECT id, name, email, password
-            FROM member
-            """, memberRowMapper);
+                SELECT id, name, email, password
+                FROM member
+                """, memberRowMapper);
     }
 
     @Override
     public Member findById(Long id) {
-        return jdbcTemplate.queryForObject("""
-            SELECT id, name, email, password
-            FROM member
-            WHERE id = ?
-            """, memberRowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject("""
+                    SELECT id, name, email, password
+                    FROM member
+                    WHERE id = ?
+                    """, memberRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ApplicationException(MEMBER_NOT_FOUND);
+        }
     }
 
     @Override
@@ -49,8 +57,8 @@ public class MemberRepositoryJdbc implements MemberRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement("""
-                INSERT INTO member (name, email, password) VALUES (?, ?, ?)
-                """, new String[]{"id"});
+                    INSERT INTO member (name, email, password) VALUES (?, ?, ?)
+                    """, new String[]{"id"});
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
@@ -61,19 +69,27 @@ public class MemberRepositoryJdbc implements MemberRepository {
 
     @Override
     public Member update(Member member) {
-        jdbcTemplate.update("""
-            UPDATE member
-            SET name = ?, email = ?
-            WHERE id = ?
-            """, member.getName(), member.getEmail(), member.getId());
-        return findById(member.getId());
+        try {
+            jdbcTemplate.update("""
+                    UPDATE member
+                    SET name = ?, email = ?
+                    WHERE id = ?
+                    """, member.getName(), member.getEmail(), member.getId());
+            return findById(member.getId());
+        } catch (DuplicateKeyException e) {
+            throw new ApplicationException(EMAIL_EXISTS);
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("""
-            DELETE FROM member
-            WHERE id = ?
-            """, id);
+        try {
+            jdbcTemplate.update("""
+                    DELETE FROM member
+                    WHERE id = ?
+                    """, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApplicationException(MEMBER_REFERENCE);
+        }
     }
 }

@@ -1,16 +1,46 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Entity
 public class Article {
 
+    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @Column(name = "author_id")
     private Long authorId;
+
+    @NotNull
+    @Column(name = "board_id")
     private Long boardId;
+
+    @NotNull
+    @Column(name = "title")
     private String title;
+
+    @NotNull
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "created_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
+
+    @Setter
+    @Column(name = "modified_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime modifiedAt;
+
+    public Article() {
+    }
 
     public Article(
         Long id,
@@ -47,39 +77,4 @@ public class Article {
         this.modifiedAt = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
 }
