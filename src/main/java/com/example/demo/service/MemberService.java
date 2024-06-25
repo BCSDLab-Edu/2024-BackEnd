@@ -1,15 +1,14 @@
 package com.example.demo.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.demo.controller.dto.request.MemberCreateRequest;
 import com.example.demo.controller.dto.request.MemberUpdateRequest;
 import com.example.demo.controller.dto.response.MemberResponse;
 import com.example.demo.domain.Member;
 import com.example.demo.repository.MemberRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,7 +47,8 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member old = memberRepository.findById(id);
+        Member member = new Member(old.getId(), old.getName(), old.getEmail(), old.getPassword());
         member.update(request.name(), request.email());
         memberRepository.update(member);
         return MemberResponse.from(member);

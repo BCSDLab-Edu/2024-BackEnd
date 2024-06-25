@@ -1,17 +1,15 @@
 package com.example.demo.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-
+import com.example.demo.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.domain.Member;
+import java.sql.PreparedStatement;
+import java.util.List;
 
-@Repository
 public class MemberRepositoryJdbc implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
