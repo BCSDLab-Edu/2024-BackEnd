@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,45 +37,42 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
-        Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        Optional<Article> article;
+        article = articleRepository.findById(id);
+        return article.map(a -> ArticleResponse.of(a, a.getMember(), a.getBoard())).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST));
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {
         List<Article> articles = articleRepository.findAllByBoardId(boardId);
         return articles.stream()
             .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                Board board = boardRepository.findById(article.getBoardId());
-                return ArticleResponse.of(article, member, board);
+                return ArticleResponse.of(article, article.getMember(), article.getBoard());
             })
             .toList();
     }
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
-        Article article = new Article(
-            request.authorId(),
-            request.boardId(),
-            request.title(),
-            request.description()
-        );
-        Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
+        Member member;
+        Board board;
+
+        member = memberRepository.findById(request.authorId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
+        board = boardRepository.findById(request.boardId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
+
+        Article article = Article.createArticle(request.title(), request.content(), member, board);
+        Article saved = articleRepository.save(article);
+
         return ArticleResponse.of(saved, member, board);
     }
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
-        Article article = articleRepository.findById(id);
-        article.update(request.boardId(), request.title(), request.description());
-        Article updated = articleRepository.update(article);
-        Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST));
+        Board board;
+        board = boardRepository.findById(request.boardId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
+
+        article.update(board, request.title(), request.description());
+        return ArticleResponse.of(article, article.getMember(), board);
     }
 
     @Transactional

@@ -1,9 +1,22 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
+
+@Entity
 public class Board {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_id")
     private Long id;
     private String name;
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = ALL)
+    private List<Article> articles;
 
     public Board(Long id, String name) {
         this.id = id;
@@ -12,6 +25,10 @@ public class Board {
 
     public Board(String name) {
         this.name = name;
+    }
+
+    public Board() {
+
     }
 
     public Long getId() {
@@ -28,5 +45,9 @@ public class Board {
 
     public void update(String name) {
         this.name = name;
+    }
+
+    public List<Article> getArticles() {
+        return articles;
     }
 }

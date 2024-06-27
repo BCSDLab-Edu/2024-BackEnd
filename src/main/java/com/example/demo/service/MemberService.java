@@ -1,7 +1,13 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.domain.Article;
+import com.example.demo.exception.errorcode.CommonErrorCode;
+import com.example.demo.exception.exception.RestApiException;
+import com.example.demo.repository.ArticleRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +22,17 @@ import com.example.demo.repository.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ArticleRepository articleRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, ArticleRepository articleRepository) {
         this.memberRepository = memberRepository;
+        this.articleRepository = articleRepository;
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
-        return MemberResponse.from(member);
+        Optional<Member> member;
+        member = memberRepository.findById(id);
+        return member.map(MemberResponse::from).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
     }
 
     public List<MemberResponse> getAll() {
@@ -35,7 +44,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberCreateRequest request) {
-        Member member = memberRepository.insert(
+        Member member = memberRepository.save(
             new Member(request.name(), request.email(), request.password())
         );
         return MemberResponse.from(member);
@@ -43,14 +52,22 @@ public class MemberService {
 
     @Transactional
     public void delete(Long id) {
+        // 삭제 시 article이 참조하고 있는 경우 삭제를 못하게 해야됨.
+        Boolean isArticleExist = articleRepository.findAllByMemberId(id).stream()
+                .findAny()
+                .isPresent();
+
+        if(isArticleExist) {
+            throw new RestApiException(CommonErrorCode.DELETE_ARTICLE_EXIST_IN_MEMBER);
+        }
+
         memberRepository.deleteById(id);
     }
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
         member.update(request.name(), request.email());
-        memberRepository.update(member);
         return MemberResponse.from(member);
     }
 }
