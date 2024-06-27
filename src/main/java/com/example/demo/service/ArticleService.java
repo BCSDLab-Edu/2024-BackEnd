@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.demo.exception.errorcode.CommonErrorCode;
 import com.example.demo.exception.exception.RestApiException;
@@ -36,14 +37,9 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
-        Article article;
-        try {
-            article = articleRepository.findById(id);
-        } catch (RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST);
-        }
-
-        return ArticleResponse.of(article, article.getMember(), article.getBoard());
+        Optional<Article> article;
+        article = articleRepository.findById(id);
+        return article.map(a -> ArticleResponse.of(a, a.getMember(), a.getBoard())).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST));
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {
@@ -59,36 +55,23 @@ public class ArticleService {
     public ArticleResponse create(ArticleCreateRequest request) {
         Member member;
         Board board;
-        try {
-            member = memberRepository.findById(request.authorId());
-        } catch(RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.POST_MEMBER_NOT_EXIST);
-        }
-        try {
-            board = boardRepository.findById(request.boardId());
-        } catch(RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.POST_BOARD_NOT_EXIST);
-        }
+
+        member = memberRepository.findById(request.authorId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
+        board = boardRepository.findById(request.boardId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
 
         Article article = Article.createArticle(request.title(), request.content(), member, board);
-        Article saved = articleRepository.insert(article);
+        Article saved = articleRepository.save(article);
 
-        // try-catch 문을 따로 사용하여 어디서 에러가 났는지 구분
         return ArticleResponse.of(saved, member, board);
     }
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
-        Article article = articleRepository.findById(id);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_ARTICLE_NOT_EXIST));
         Board board;
-        try {
-            board = boardRepository.findById(request.boardId());
-        } catch(RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.POST_BOARD_NOT_EXIST);
-        }
+        board = boardRepository.findById(request.boardId()).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
 
         article.update(board, request.title(), request.description());
-//        Article updated = articleRepository.update(article);
         return ArticleResponse.of(article, article.getMember(), board);
     }
 

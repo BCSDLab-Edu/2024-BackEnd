@@ -1,3 +1,4 @@
+/*
 package com.example.demo.repository;
 
 import com.example.demo.domain.Article;
@@ -59,3 +60,4 @@ public class ArticleRepositoryJpa implements ArticleRepository {
         em.remove(article);
     }
 }
+*/
