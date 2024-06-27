@@ -36,9 +36,7 @@ public class BoardService {
 
     public BoardResponse getBoardById(Long id) {
         Optional<Board> board;
-
         board = boardRepository.findById(id);
-
         return board.map(BoardResponse::from).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
     }
 
@@ -64,7 +62,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse update(Long id, BoardUpdateRequest request) {
-        Board board = boardRepository.findById(id);
+        Board board = boardRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
         board.update(request.name());
         return BoardResponse.from(board);
     }

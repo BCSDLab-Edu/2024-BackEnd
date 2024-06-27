@@ -30,13 +30,9 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
-        Member member;
-        try {
-            member = memberRepository.findById(id);
-        } catch(RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST);
-        }
-        return MemberResponse.from(member);
+        Optional<Member> member;
+        member = memberRepository.findById(id);
+        return member.map(MemberResponse::from).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
     }
 
     public List<MemberResponse> getAll() {
@@ -48,7 +44,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberCreateRequest request) {
-        Member member = memberRepository.insert(
+        Member member = memberRepository.save(
             new Member(request.name(), request.email(), request.password())
         );
         return MemberResponse.from(member);
@@ -70,7 +66,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_MEMBER_NOT_EXIST));
         member.update(request.name(), request.email());
         return MemberResponse.from(member);
     }
