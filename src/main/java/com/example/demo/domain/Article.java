@@ -14,7 +14,7 @@ public class Article {
 //    private Long authorId;
 //    private Long boardId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Member member;
 

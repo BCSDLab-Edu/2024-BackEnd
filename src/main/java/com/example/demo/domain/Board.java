@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.ALL;
+
 @Entity
 public class Board {
 
@@ -13,7 +15,7 @@ public class Board {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = ALL)
     private List<Article> articles;
 
     public Board(Long id, String name) {
