@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.demo.domain.Article;
 import com.example.demo.exception.errorcode.CommonErrorCode;
@@ -34,20 +35,17 @@ public class BoardService {
     }
 
     public BoardResponse getBoardById(Long id) {
-        Board board;
+        Optional<Board> board;
 
-        try {
-            board = boardRepository.findById(id);
-        } catch (RuntimeException e) {
-            throw new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST);
-        }
-        return BoardResponse.from(board);
+        board = boardRepository.findById(id);
+
+        return board.map(BoardResponse::from).orElseThrow(() -> new RestApiException(CommonErrorCode.GET_BOARD_NOT_EXIST));
     }
 
     @Transactional
     public BoardResponse createBoard(BoardCreateRequest request) {
         Board board = new Board(request.name());
-        Board saved = boardRepository.insert(board);
+        Board saved = boardRepository.save(board);
         return BoardResponse.from(saved);
     }
 
