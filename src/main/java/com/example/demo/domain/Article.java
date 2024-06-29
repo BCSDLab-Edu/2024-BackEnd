@@ -1,22 +1,28 @@
 package com.example.demo.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="article")
+@Getter
+@Setter
 public class Article {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="author_id", nullable=false)
-    private Long authorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Member member;
 
-    @Column(name="board_id", nullable=false)
-    private Long boardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
 
     @Column(name="title", nullable=false)
     private String title;
@@ -32,26 +38,26 @@ public class Article {
 
     public Article(
         Long id,
-        Long authorId,
-        Long boardId,
+        Member member,
+        Board board,
         String title,
         String content,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt
     ) {
         this.id = id;
-        this.authorId = authorId;
-        this.boardId = boardId;
+        this.member = member;
+        this.board = board;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
 
-    public Article(Long authorId, Long boardId, String title, String content) {
+    public Article(Member member, Board board, String title, String content) {
         this.id = null;
-        this.authorId = authorId;
-        this.boardId = boardId;
+        this.member = member;
+        this.board = board;
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
@@ -62,46 +68,12 @@ public class Article {
 
     }
 
-    public void update(Long boardId, String title, String description) {
-        this.boardId = boardId;
+    public void update(Board board, String title, String description) {
+        this.board = board;
         this.title = title;
         this.content = description;
         this.modifiedAt = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
 }

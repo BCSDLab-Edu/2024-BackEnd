@@ -1,9 +1,16 @@
 package com.example.demo.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="members")
+@Getter
+@Setter
 public class Member {
 
     @Id
@@ -18,6 +25,9 @@ public class Member {
 
     @Column(name="password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "author")
+    private List<Article> articles = new ArrayList<>();
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
@@ -41,23 +51,12 @@ public class Member {
         this.email = email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void addArticle(Article article) {
+        articles.add(article);
     }
 
-    public Long getId() {
-        return id;
+    public void removeArticle(Article article) {
+        articles.remove(article);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
