@@ -26,7 +26,7 @@ public class Member {
     @Column(name="password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "member")
     private List<Article> articles = new ArrayList<>();
 
     public Member(Long id, String name, String email, String password) {
