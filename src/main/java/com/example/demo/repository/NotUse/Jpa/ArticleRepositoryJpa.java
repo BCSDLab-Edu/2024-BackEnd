@@ -1,6 +1,7 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.Jpa;
 
 import com.example.demo.domain.Article;
+import com.example.demo.repository.ArticleRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -66,3 +67,4 @@ public class ArticleRepositoryJpa implements ArticleRepository {
     }
 
 }
+*/

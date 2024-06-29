@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.memory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Member;
+import com.example.demo.repository.MemberRepository;
 
 public class MemberRepositoryMemory implements MemberRepository {
 
@@ -56,3 +57,4 @@ public class MemberRepositoryMemory implements MemberRepository {
         return false;
     }
 }
+*/

@@ -1,6 +1,7 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.Jpa;
 
 import com.example.demo.domain.Member;
+import com.example.demo.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -46,3 +47,4 @@ public class MemberRepositoryJpa implements MemberRepository {
         return false;
     }
 }
+*/

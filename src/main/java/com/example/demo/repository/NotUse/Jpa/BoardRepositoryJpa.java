@@ -1,6 +1,7 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.Jpa;
 
 import com.example.demo.domain.Board;
+import com.example.demo.repository.BoardRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -40,3 +41,4 @@ public class BoardRepositoryJpa implements BoardRepository {
         }
     }
 }
+*/

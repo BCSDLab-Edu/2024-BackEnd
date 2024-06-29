@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.memory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Board;
+import com.example.demo.repository.BoardRepository;
 
 public class BoardRepositoryMemory implements BoardRepository {
 
@@ -49,3 +50,4 @@ public class BoardRepositoryMemory implements BoardRepository {
         return boards.put(board.getId(), board);
     }
 }
+*/
