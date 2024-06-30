@@ -1,22 +1,27 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
+import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.domain.Article;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface ArticleRepository {
+import java.util.List;
+import java.util.Optional;
 
-    List<Article> findAll();
 
-    List<Article> findAllByBoardId(Long boardId);
+public interface ArticleRepository extends JpaRepository<Article, Long> {
+    @Query("SELECT new com.example.demo.controller.dto.response.ArticleResponse(article.id, article.title, article.content, article.author.id, article.board.id, article.created_date, article.updated_date) " +
+            "FROM Article article WHERE article.board.id = :id")
+    List<ArticleResponse> findByBoardId(@Param("id") Long boardId);
 
-    List<Article> findAllByMemberId(Long memberId);
+    @Query("SELECT new com.example.demo.controller.dto.response.ArticleResponse(article.id, article.title, article.content, article.author.id, article.board.id, article.created_date, article.updated_date) " +
+            "FROM Article article WHERE article.id = :id")
+    Optional<Article> findById(@Param("id") Long id);
 
-    Article findById(Long id);
+    @Query("SELECT new com.example.demo.controller.dto.response.ArticleResponse(article.id, article.title, article.content, article.author.id, article.board.id, article.created_date, article.updated_date) " +
+            "FROM Article article")
+    List<ArticleResponse> findAllArticles();
 
-    Article insert(Article article);
-
-    Article update(Article article);
-
-    void deleteById(Long id);
+    Article findArticleById(Long id);
 }

@@ -1,13 +1,19 @@
 package com.example.demo.controller.dto.response;
 
-import com.example.demo.domain.Board;
 
-public record BoardResponse(
-    Long id,
-    String name
-) {
+public class BoardResponse {
+    Long id;
+    String name;
 
-    public static BoardResponse from(Board board) {
-        return new BoardResponse(board.getId(), board.getName());
+    public BoardResponse(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
     }
 }

@@ -1,32 +1,42 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
+@Entity
+@Table(name = "board")
 public class Board {
 
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+
+    @Column(length = 100, nullable = false)
     private String name;
 
-    public Board(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Board(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    public List<Article> articles = new ArrayList<>();
 
     public void update(String name) {
         this.name = name;
+    }
+
+    public void addArticle(Article article) {
+        if (articles == null) articles = new ArrayList<>();
+        articles.add(article);
+    }
+
+    public Long getId() {
+        return this.id = id;
+    }
+
+    public String getName() {
+        return this.name = name;
     }
 }

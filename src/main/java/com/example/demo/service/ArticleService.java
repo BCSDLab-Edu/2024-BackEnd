@@ -1,79 +1,74 @@
 package com.example.demo.service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import com.example.demo.controller.dto.request.ArticleCreateRequest;
-import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.controller.dto.request.ArticleUpdateRequest;
-import com.example.demo.domain.Article;
+import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.domain.Board;
 import com.example.demo.domain.Member;
 import com.example.demo.repository.ArticleRepository;
 import com.example.demo.repository.BoardRepository;
 import com.example.demo.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.example.demo.domain.Article;
+
 
 @Service
-@Transactional(readOnly = true)
 public class ArticleService {
 
-    private final ArticleRepository articleRepository;
-    private final MemberRepository memberRepository;
-    private final BoardRepository boardRepository;
+    @Autowired
+    private ArticleRepository articleRepository;
 
-    public ArticleService(
-        ArticleRepository articleRepository,
-        MemberRepository memberRepository,
-        BoardRepository boardRepository
-    ) {
-        this.articleRepository = articleRepository;
-        this.memberRepository = memberRepository;
-        this.boardRepository = boardRepository;
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    public List<ArticleResponse> getAll() {
+        return articleRepository.findAllArticles();
     }
 
-    public ArticleResponse getById(Long id) {
-        Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+    public Optional<Article> getById(Long id) {
+        return articleRepository.findById(id);
     }
 
-    public List<ArticleResponse> getByBoardId(Long boardId) {
-        List<Article> articles = articleRepository.findAllByBoardId(boardId);
-        return articles.stream()
-            .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                Board board = boardRepository.findById(article.getBoardId());
-                return ArticleResponse.of(article, member, board);
-            })
-            .toList();
+    public List<ArticleResponse> getByBoardId(Long id) {
+        return articleRepository.findByBoardId(id);
     }
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
-        Article article = new Article(
-            request.authorId(),
-            request.boardId(),
-            request.title(),
-            request.description()
-        );
-        Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
-        return ArticleResponse.of(saved, member, board);
+        Board board = boardRepository.findBoardById(request.board_id);
+        Member author = memberRepository.findMemberById(request.author_id);
+
+        Article article = new Article();
+        article.update(board, request.title, request.content);
+        article.setAuthor(author);
+
+        Article saved = articleRepository.save(article);
+        return new ArticleResponse(saved.getId(), saved.getTitle(), saved.getContent(), saved.getAuthor().getId(), saved.getBoard().getId(), saved.getCreated_date(), saved.getUpdated_date());
     }
+
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
-        Article article = articleRepository.findById(id);
-        article.update(request.boardId(), request.title(), request.description());
-        Article updated = articleRepository.update(article);
-        Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        Article article = articleRepository.findArticleById(id);
+        Board board = boardRepository.findBoardById(request.board_id);
+
+        article.update(board, request.title, request.content);
+
+        Article saved = articleRepository.save(article);
+
+        return new ArticleResponse(saved.getId(), saved.getTitle(), saved.getContent(), saved.getAuthor().getId(), saved.getBoard().getId(), saved.getCreated_date(), saved.getUpdated_date());
     }
+
 
     @Transactional
     public void delete(Long id) {

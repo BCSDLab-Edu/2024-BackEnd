@@ -99,7 +99,7 @@
         document.getElementById('board-id').textContent = article.board_id;
         document.getElementById('created-date').textContent = new Date(article.created_date).toLocaleString();
         document.getElementById('modified-date').textContent = new Date(article.modified_date).toLocaleString();
-        document.getElementById('article-description').textContent = article.description;
+        document.getElementById('article-description').textContent = article.content;
       })
       .catch(error => console.error('Error fetching article:', error));
     } else {
