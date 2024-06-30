@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.exception.HTTPApiException;
+import com.example.demo.proxyservice.BoardProxyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +21,9 @@ import com.example.demo.service.BoardService;
 @RestController
 public class BoardController {
 
-    private final BoardService boardService;
+    private final BoardProxyService boardService;
 
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardProxyService boardService) {
         this.boardService = boardService;
     }
 
@@ -40,7 +42,7 @@ public class BoardController {
     @PostMapping("/boards")
     public BoardResponse createBoard(
         @RequestBody BoardCreateRequest request
-    ) {
+    ) throws HTTPApiException {
         return boardService.createBoard(request);
     }
 
@@ -48,14 +50,14 @@ public class BoardController {
     public BoardResponse updateBoard(
         @PathVariable Long id,
         @RequestBody BoardUpdateRequest updateRequest
-    ) {
+    ) throws HTTPApiException {
         return boardService.update(id, updateRequest);
     }
 
     @DeleteMapping("/boards/{id}")
     public ResponseEntity<Void> deleteBoard(
         @PathVariable Long id
-    ) {
+    ) throws HTTPApiException {
         boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();
     }

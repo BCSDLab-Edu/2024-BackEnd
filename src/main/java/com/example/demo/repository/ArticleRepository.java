@@ -2,21 +2,26 @@ package com.example.demo.repository;
 
 import java.util.List;
 
-import com.example.demo.domain.Article;
+import com.example.demo.entity.Board;
+import com.example.demo.entity.Member;
+import jakarta.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ArticleRepository {
+import com.example.demo.entity.Article;
 
-    List<Article> findAll();
+@Repository
+public interface ArticleRepository extends JpaRepository<Article, Long> {
 
-    List<Article> findAllByBoardId(Long boardId);
+    default Article insert(Article article) {
+        return save(article);
+    }
 
-    List<Article> findAllByMemberId(Long memberId);
+    default Article update(Article article) {
+        return save(article);
+    }
 
-    Article findById(Long id);
-
-    Article insert(Article article);
-
-    Article update(Article article);
-
-    void deleteById(Long id);
+    default void deleteById(Long id) {
+        delete(findById(id).get());
+    }
 }

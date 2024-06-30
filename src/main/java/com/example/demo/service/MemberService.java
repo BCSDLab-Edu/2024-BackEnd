@@ -2,17 +2,17 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.controller.dto.request.MemberCreateRequest;
 import com.example.demo.controller.dto.request.MemberUpdateRequest;
 import com.example.demo.controller.dto.response.MemberResponse;
-import com.example.demo.domain.Member;
-import com.example.demo.repository.MemberRepository;
+import com.example.demo.entity.Member;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -22,7 +22,7 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         return MemberResponse.from(member);
     }
 
@@ -48,9 +48,18 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         member.update(request.name(), request.email());
         memberRepository.update(member);
         return MemberResponse.from(member);
+    }
+
+    public boolean isExistEmail(Long notthis, String email) {
+        System.out.println("a");
+        return memberRepository.isExistEmail(notthis, email);
+    }
+
+    public boolean isExistUser(Long userid) {
+        return memberRepository.isExist(userid);
     }
 }

@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import java.net.URI;
 import java.util.List;
 
+import com.example.demo.exception.HTTPApiException;
+import com.example.demo.proxyservice.ArticleProxyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,16 +23,16 @@ import com.example.demo.service.ArticleService;
 @RestController
 public class ArticleController {
 
-    private final ArticleService articleService;
+    private final ArticleProxyService articleService;
 
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleProxyService articleService) {
         this.articleService = articleService;
     }
 
     @GetMapping("/articles")
     public ResponseEntity<List<ArticleResponse>> getArticles(
         @RequestParam Long boardId
-    ) {
+    ) throws HTTPApiException {
         List<ArticleResponse> response = articleService.getByBoardId(boardId);
         return ResponseEntity.ok(response);
     }
@@ -46,7 +48,7 @@ public class ArticleController {
     @PostMapping("/articles")
     public ResponseEntity<ArticleResponse> crateArticle(
         @RequestBody ArticleCreateRequest request
-    ) {
+    ) throws HTTPApiException {
         ArticleResponse response = articleService.create(request);
         return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
     }
@@ -55,7 +57,7 @@ public class ArticleController {
     public ResponseEntity<ArticleResponse> updateArticle(
         @PathVariable Long id,
         @RequestBody ArticleUpdateRequest request
-    ) {
+    ) throws HTTPApiException {
         ArticleResponse response = articleService.update(id, request);
         return ResponseEntity.ok(response);
     }
