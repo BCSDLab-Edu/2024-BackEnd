@@ -1,11 +1,13 @@
-package com.example.demo.repository;
+/* package com.example.demo.repository.memory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Article;
+import com.example.demo.repository.ArticleRepository;
 
 public class ArticleRepositoryMemory implements ArticleRepository {
 
@@ -45,8 +47,8 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     }
 
     @Override
-    public Article findById(Long id) {
-        return articles.getOrDefault(id, null);
+    public Optional<Article> findById(Long id) {
+        return Optional.ofNullable(articles.getOrDefault(id, null));
     }
 
     @Override
@@ -67,4 +69,15 @@ public class ArticleRepositoryMemory implements ArticleRepository {
     public void deleteById(Long id) {
         articles.remove(id);
     }
+
+    @Override
+    public boolean existByAuthorId(Long authorId) {
+        return false;
+    }
+
+    @Override
+    public boolean existByBoardId(Long boardId) {
+        return false;
+    }
 }
+*/
