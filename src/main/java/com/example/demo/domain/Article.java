@@ -1,16 +1,45 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "article")
+@NoArgsConstructor
+@Getter
+@Setter
 public class Article {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "author_id", nullable = false)
     private Long authorId;
+
+    @Column(name = "board_id", nullable = false)
     private Long boardId;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name = "created_date")
     private LocalDateTime createdAt;
+
+    @Column(name = "modified_date")
     private LocalDateTime modifiedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id", insertable = false, updatable = false)
+    private Board board;
 
     public Article(
         Long id,
@@ -47,39 +76,5 @@ public class Article {
         this.modifiedAt = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
 }

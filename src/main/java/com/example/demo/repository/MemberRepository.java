@@ -1,18 +1,9 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
 import com.example.demo.domain.Member;
 
-public interface MemberRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    List<Member> findAll();
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Member findById(Long id);
-
-    Member insert(Member member);
-
-    Member update(Member member);
-
-    void deleteById(Long id);
 }
