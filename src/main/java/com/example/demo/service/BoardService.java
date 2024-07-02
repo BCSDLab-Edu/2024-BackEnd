@@ -22,20 +22,26 @@ public class BoardService {
     }
 
     public List<BoardResponse> getBoards() {
-        return boardRepository.findAll().stream()
-            .map(BoardResponse::from)
-            .toList();
+        List<Board> boards = boardRepository.findAll();
+
+        return (boards
+                .stream()
+                .map(BoardResponse::from)
+                .toList()
+        );
     }
 
     public BoardResponse getBoardById(Long id) {
-        Board board = boardRepository.findById(id);
+        Board board = boardRepository.findById(id).get();
+
         return BoardResponse.from(board);
     }
 
     @Transactional
     public BoardResponse createBoard(BoardCreateRequest request) {
         Board board = new Board(request.name());
-        Board saved = boardRepository.insert(board);
+        Board saved = boardRepository.save(board);
+
         return BoardResponse.from(saved);
     }
 
@@ -46,9 +52,11 @@ public class BoardService {
 
     @Transactional
     public BoardResponse update(Long id, BoardUpdateRequest request) {
-        Board board = boardRepository.findById(id);
+        Board board = boardRepository.findById(id).get();
         board.update(request.name());
-        Board updated = boardRepository.update(board);
-        return BoardResponse.from(updated);
+
+        boardRepository.save(board);
+
+        return BoardResponse.from(board);
     }
 }

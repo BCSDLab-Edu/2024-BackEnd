@@ -1,11 +1,28 @@
 package com.example.demo.domain;
 
-public class Member {
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "member")
+public class Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
     private String name;
+
+    @Column
     private String email;
+
+    @Column
     private String password;
+
+    @OneToMany(mappedBy = "author")
+    private List<Article> articles = new ArrayList<>();
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
@@ -18,6 +35,10 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Member() {
+
     }
 
     public void update(String name, String email) {
@@ -44,4 +65,10 @@ public class Member {
     public String getPassword() {
         return password;
     }
+
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+
 }

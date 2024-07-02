@@ -22,7 +22,7 @@ public class MemberService {
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         return MemberResponse.from(member);
     }
 
@@ -35,9 +35,9 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberCreateRequest request) {
-        Member member = memberRepository.insert(
-            new Member(request.name(), request.email(), request.password())
-        );
+        Member member = new Member(request.name(), request.email(), request.password());
+        memberRepository.save(member);
+
         return MemberResponse.from(member);
     }
 
@@ -48,9 +48,13 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         member.update(request.name(), request.email());
-        memberRepository.update(member);
+
+        memberRepository.save(member);
+
         return MemberResponse.from(member);
     }
+
+
 }

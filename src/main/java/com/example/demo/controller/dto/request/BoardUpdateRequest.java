@@ -1,7 +1,9 @@
 package com.example.demo.controller.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record BoardUpdateRequest(
-    String name
+    @NotNull String name
 ) {
 
 }

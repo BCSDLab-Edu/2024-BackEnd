@@ -1,9 +1,11 @@
 package com.example.demo.controller.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record MemberCreateRequest(
-    String name,
-    String email,
-    String password
+    @NotNull String name,
+    @NotNull String email,
+    @NotNull String password
 ) {
 
 }
