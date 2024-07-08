@@ -9,30 +9,57 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-@JsonNaming(SnakeCaseStrategy.class)
-public record ArticleResponse(
-    Long id,
-    Long authorId,
-    Long boardId,
-    String title,
-    String description,
+import java.time.LocalDateTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime createdDate,
+public class ArticleResponse {
+    private Long id;
+    private String title;
+    private String content;
+    private Long author_id;
+    private Long board_id;
+    private LocalDateTime created_date;
+    private LocalDateTime updated_date;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime modifiedDate
-) {
 
-    public static ArticleResponse of(Article article, Member member, Board board) {
-        return new ArticleResponse(
-            article.getId(),
-            member.getId(),
-            board.getId(),
-            article.getTitle(),
-            article.getContent(),
-            article.getCreatedAt(),
-            article.getModifiedAt()
-        );
+    // 생성자
+    public ArticleResponse(Long id, String title, String content, Long author_id, Long board_id, LocalDateTime created_date, LocalDateTime updated_date) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.author_id = author_id;
+        this.board_id = board_id;
+        this.created_date = created_date;
+        this.updated_date = updated_date;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+
+    public String getContent() {
+        return content;
+    }
+
+    public Long getAuthor_id() {
+        return author_id;
+    }
+
+    public Long getBoard_id() {
+        return board_id;
+    }
+
+    public LocalDateTime getCreated_date() {
+        return created_date;
+    }
+
+    public LocalDateTime getUpdated_date() {
+        return updated_date;
+    }
+
 }

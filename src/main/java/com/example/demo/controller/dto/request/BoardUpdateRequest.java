@@ -1,7 +1,14 @@
 package com.example.demo.controller.dto.request;
 
-public record BoardUpdateRequest(
-    String name
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class BoardUpdateRequest {
+    public String name;
 }

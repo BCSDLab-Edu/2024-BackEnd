@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.domain.Member;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
@@ -29,37 +33,29 @@ public class MemberController {
     public ResponseEntity<List<MemberResponse>> getMembers() {
         List<MemberResponse> response = memberService.getAll();
         return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("/members/{id}")
-    public ResponseEntity<MemberResponse> getMember(
-        @PathVariable Long id
-    ) {
-        MemberResponse response = memberService.getById(id);
+    public ResponseEntity<Optional<Member>> getMember(@PathVariable Long id) {
+        Optional<Member> response = memberService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> create(
-        @RequestBody MemberCreateRequest request
-    ) {
+    public ResponseEntity<MemberResponse> createMember(@RequestBody Member request) {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/members/{id}")
-    public ResponseEntity<MemberResponse> updateMember(
-        @PathVariable Long id,
-        @RequestBody MemberUpdateRequest request
-    ) {
+    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long id, @RequestBody MemberUpdateRequest request) {
         MemberResponse response = memberService.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/members/{id}")
-    public ResponseEntity<Void> deleteMember(
-        @PathVariable Long id
-    ) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         memberService.delete(id);
         return ResponseEntity.noContent().build();
     }
