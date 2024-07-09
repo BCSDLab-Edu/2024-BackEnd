@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.dto.request.LoginRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -23,4 +25,20 @@ public class PageController {
     public String getArticleDetailPage() {
         return "article";
     }
+
+    @GetMapping("/register")
+    public String getRegisterPage() {
+        return "register";
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
+
+    @GetMapping("/index")
+    public String getIndexPage() {
+        return "index";
+    }
+
 }

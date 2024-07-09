@@ -1,85 +1,65 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
+@Entity
+@Table(name = "article")
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class Article {
 
+    @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private Long authorId;
-    private Long boardId;
+
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Member member;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
+
+    @NotNull
+    @Column(name = "title")
     private String title;
+
+    @NotNull
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "created_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
+
+    @Setter
+    @Column(name = "modified_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime modifiedAt;
 
-    public Article(
-        Long id,
-        Long authorId,
-        Long boardId,
-        String title,
-        String content,
-        LocalDateTime createdAt,
-        LocalDateTime modifiedAt
-    ) {
-        this.id = id;
-        this.authorId = authorId;
-        this.boardId = boardId;
-        this.title = title;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Article(Long authorId, Long boardId, String title, String content) {
-        this.id = null;
-        this.authorId = authorId;
-        this.boardId = boardId;
+    @Builder
+    Article(Board board, Member member, String title, String content) {
+        this.board = board;
+        this.member = member;
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
+        member.getArticles().add(this);
     }
 
-    public void update(Long boardId, String title, String description) {
-        this.boardId = boardId;
+    public void update(Board board, String title, String description) {
+        this.board = board;
         this.title = title;
         this.content = description;
         this.modifiedAt = LocalDateTime.now();
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
     }
 }

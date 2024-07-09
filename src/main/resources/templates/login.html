@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+</head>
+<body>
+<div layout:fragment="content" class="container my-3">
+    <form th:action="@{/login}" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">이메일</label>
+            <input type="text" name="email" id="email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" name="password" id="password" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+</div>
+</body>
+</html>

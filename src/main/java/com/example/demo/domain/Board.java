@@ -1,29 +1,38 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+@Entity
+@Getter
+@Table(name = "board")
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class Board {
 
+    @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @NotNull
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
-    public Board(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = {REMOVE, PERSIST})
+    private List<Article> articles = new ArrayList<>();
 
     public Board(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void update(String name) {

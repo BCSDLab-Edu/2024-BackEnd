@@ -1,20 +1,14 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.controller.dto.request.MemberCreateRequest;
 import com.example.demo.controller.dto.request.MemberUpdateRequest;
 import com.example.demo.controller.dto.response.MemberResponse;
 import com.example.demo.service.MemberService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class MemberController {
@@ -27,40 +21,40 @@ public class MemberController {
 
     @GetMapping("/members")
     public ResponseEntity<List<MemberResponse>> getMembers() {
-        List<MemberResponse> response = memberService.getAll();
+        List<MemberResponse> response = memberService.getMembers();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/members/{id}")
     public ResponseEntity<MemberResponse> getMember(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
-        MemberResponse response = memberService.getById(id);
+        MemberResponse response = memberService.getByMemberId(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> create(
-        @RequestBody MemberCreateRequest request
+    public ResponseEntity<MemberResponse> createMember(
+            @Valid @ModelAttribute MemberCreateRequest request
     ) {
-        MemberResponse response = memberService.create(request);
+        MemberResponse response = memberService.createMember(request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/members/{id}")
     public ResponseEntity<MemberResponse> updateMember(
-        @PathVariable Long id,
-        @RequestBody MemberUpdateRequest request
+            @PathVariable Long id,
+            @RequestBody MemberUpdateRequest request
     ) {
-        MemberResponse response = memberService.update(id, request);
+        MemberResponse response = memberService.updateMember(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/members/{id}")
     public ResponseEntity<Void> deleteMember(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
-        memberService.delete(id);
+        memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
     }
 }
