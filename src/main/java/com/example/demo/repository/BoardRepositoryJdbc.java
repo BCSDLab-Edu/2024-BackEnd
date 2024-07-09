@@ -1,18 +1,16 @@
 package com.example.demo.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-
+import com.example.demo.domain.Board;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.domain.Board;
+import java.sql.PreparedStatement;
+import java.util.List;
 
-@Repository
-public class BoardRepositoryJdbc implements BoardRepository {
+public class BoardRepositoryJdbc {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -25,7 +23,6 @@ public class BoardRepositoryJdbc implements BoardRepository {
         rs.getString("name")
     );
 
-    @Override
     public List<Board> findAll() {
         return jdbcTemplate.query("""
             SELECT id, name
@@ -33,7 +30,6 @@ public class BoardRepositoryJdbc implements BoardRepository {
             """, boardRowMapper);
     }
 
-    @Override
     public Board findById(Long id) {
         return jdbcTemplate.queryForObject("""
             SELECT id, name
@@ -42,7 +38,6 @@ public class BoardRepositoryJdbc implements BoardRepository {
             """, boardRowMapper, id);
     }
 
-    @Override
     public Board insert(Board board) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -55,18 +50,17 @@ public class BoardRepositoryJdbc implements BoardRepository {
         return findById(keyHolder.getKey().longValue());
     }
 
-    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("""
             DELETE FROM board WHERE id = ?
             """, id);
     }
 
-    @Override
     public Board update(Board board) {
         return jdbcTemplate.queryForObject("""
             UPDATE board SET name = ? WHERE id = ?
             """, boardRowMapper, board.getName(), board.getId()
         );
     }
+
 }

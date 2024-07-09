@@ -1,13 +1,13 @@
 package com.example.demo.repository;
 
+import com.example.demo.domain.Member;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.example.demo.domain.Member;
-
-public class MemberRepositoryMemory implements MemberRepository {
+public class MemberRepositoryMemory {
 
     private static final Map<Long, Member> members = new HashMap<>();
     private static final AtomicLong autoincrement = new AtomicLong(1);
@@ -17,7 +17,6 @@ public class MemberRepositoryMemory implements MemberRepository {
         members.put(autoincrement.getAndIncrement(), new Member("최준호", "temp@gmail.com", "password"));
     }
 
-    @Override
     public List<Member> findAll() {
         return members.entrySet().stream()
             .map(it -> {
@@ -27,12 +26,10 @@ public class MemberRepositoryMemory implements MemberRepository {
             }).toList();
     }
 
-    @Override
     public Member findById(Long id) {
         return members.getOrDefault(id, null);
     }
 
-    @Override
     public Member insert(Member member) {
         long id = autoincrement.getAndIncrement();
         members.put(id, member);
@@ -40,13 +37,12 @@ public class MemberRepositoryMemory implements MemberRepository {
         return member;
     }
 
-    @Override
     public Member update(Member member) {
         return members.put(member.getId(), member);
     }
 
-    @Override
     public void deleteById(Long id) {
         members.remove(id);
     }
+
 }

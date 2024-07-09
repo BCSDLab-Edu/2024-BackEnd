@@ -1,18 +1,16 @@
 package com.example.demo.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-
+import com.example.demo.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.domain.Member;
+import java.sql.PreparedStatement;
+import java.util.List;
 
-@Repository
-public class MemberRepositoryJdbc implements MemberRepository {
+public class MemberRepositoryJdbc {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -27,7 +25,6 @@ public class MemberRepositoryJdbc implements MemberRepository {
         rs.getString("password")
     );
 
-    @Override
     public List<Member> findAll() {
         return jdbcTemplate.query("""
             SELECT id, name, email, password
@@ -35,7 +32,6 @@ public class MemberRepositoryJdbc implements MemberRepository {
             """, memberRowMapper);
     }
 
-    @Override
     public Member findById(Long id) {
         return jdbcTemplate.queryForObject("""
             SELECT id, name, email, password
@@ -44,7 +40,6 @@ public class MemberRepositoryJdbc implements MemberRepository {
             """, memberRowMapper, id);
     }
 
-    @Override
     public Member insert(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -59,7 +54,6 @@ public class MemberRepositoryJdbc implements MemberRepository {
         return findById(keyHolder.getKey().longValue());
     }
 
-    @Override
     public Member update(Member member) {
         jdbcTemplate.update("""
             UPDATE member
@@ -69,11 +63,11 @@ public class MemberRepositoryJdbc implements MemberRepository {
         return findById(member.getId());
     }
 
-    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("""
             DELETE FROM member
             WHERE id = ?
             """, id);
     }
+
 }

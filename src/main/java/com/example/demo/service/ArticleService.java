@@ -1,19 +1,18 @@
 package com.example.demo.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.demo.controller.dto.request.ArticleCreateRequest;
-import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.controller.dto.request.ArticleUpdateRequest;
+import com.example.demo.controller.dto.response.ArticleResponse;
 import com.example.demo.domain.Article;
 import com.example.demo.domain.Board;
 import com.example.demo.domain.Member;
 import com.example.demo.repository.ArticleRepository;
 import com.example.demo.repository.BoardRepository;
 import com.example.demo.repository.MemberRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,10 +32,16 @@ public class ArticleService {
         this.boardRepository = boardRepository;
     }
 
+    public List<ArticleResponse> getArticles() {
+        return articleRepository.findAll().stream()
+                .map(ArticleResponse::from)
+                .toList();
+    }
+
     public ArticleResponse getById(Long id) {
         Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+        Member member = memberRepository.findById(article.getAuthor().getId());
+        Board board = boardRepository.findById(article.getBoard().getId());
         return ArticleResponse.of(article, member, board);
     }
 
@@ -44,8 +49,8 @@ public class ArticleService {
         List<Article> articles = articleRepository.findAllByBoardId(boardId);
         return articles.stream()
             .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                Board board = boardRepository.findById(article.getBoardId());
+                Member member = memberRepository.findById(article.getAuthor().getId());
+                Board board = boardRepository.findById(article.getBoard().getId());
                 return ArticleResponse.of(article, member, board);
             })
             .toList();
@@ -54,24 +59,23 @@ public class ArticleService {
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
         Article article = new Article(
-            request.authorId(),
-            request.boardId(),
+            memberRepository.findById(request.authorId()),
+            boardRepository.findById(request.boardId()),
             request.title(),
             request.description()
         );
-        Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
+        Article saved = articleRepository.save(article);
+        Member member = saved.getAuthor();
+        Board board = saved.getBoard();
         return ArticleResponse.of(saved, member, board);
     }
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(id);
-        article.update(request.boardId(), request.title(), request.description());
-        Article updated = articleRepository.update(article);
-        Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
+        article.update(boardRepository.findById(request.boardId()), request.title(), request.description());
+        Member member = article.getAuthor();
+        Board board = article.getBoard();
         return ArticleResponse.of(article, member, board);
     }
 
@@ -79,4 +83,5 @@ public class ArticleService {
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
+
 }
