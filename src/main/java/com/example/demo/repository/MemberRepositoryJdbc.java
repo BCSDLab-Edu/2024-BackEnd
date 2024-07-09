@@ -2,7 +2,9 @@ package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.exception.MemberNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,8 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Member;
-
-@Repository
+/*
+//@Repository
 public class MemberRepositoryJdbc implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,12 +38,27 @@ public class MemberRepositoryJdbc implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Member> findById(Long id) {
+        try{
+            Member member = jdbcTemplate.queryForObject("""
             SELECT id, name, email, password
             FROM member
             WHERE id = ?
             """, memberRowMapper, id);
+            return Optional.ofNullable(member);
+        } catch(Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        Integer count = jdbcTemplate.queryForObject("""
+            SELECT COUNT(*)
+            FROM member
+            WHERE email =?
+            """, Integer.class, email);
+        return count != null && count > 0;
     }
 
     @Override
@@ -56,7 +73,8 @@ public class MemberRepositoryJdbc implements MemberRepository {
             ps.setString(3, member.getPassword());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue())
+                .orElseThrow(()->new MemberNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     @Override
@@ -66,7 +84,8 @@ public class MemberRepositoryJdbc implements MemberRepository {
             SET name = ?, email = ?
             WHERE id = ?
             """, member.getName(), member.getEmail(), member.getId());
-        return findById(member.getId());
+        return findById(member.getId())
+                .orElseThrow(()->new MemberNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     @Override
@@ -76,4 +95,4 @@ public class MemberRepositoryJdbc implements MemberRepository {
             WHERE id = ?
             """, id);
     }
-}
+}*/

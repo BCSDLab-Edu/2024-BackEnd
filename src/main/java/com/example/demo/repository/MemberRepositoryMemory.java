@@ -3,10 +3,11 @@ package com.example.demo.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Member;
-
+/*
 public class MemberRepositoryMemory implements MemberRepository {
 
     private static final Map<Long, Member> members = new HashMap<>();
@@ -28,8 +29,8 @@ public class MemberRepositoryMemory implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
-        return members.getOrDefault(id, null);
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(members.getOrDefault(id, null));
     }
 
     @Override
@@ -49,4 +50,10 @@ public class MemberRepositoryMemory implements MemberRepository {
     public void deleteById(Long id) {
         members.remove(id);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return false;
+    }
 }
+*/

@@ -1,8 +1,12 @@
+/*
 package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.exception.ArticleNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Article;
 
-@Repository
+//@Repository
 public class ArticleRepositoryJdbc implements ArticleRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -57,12 +61,17 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
     }
 
     @Override
-    public Article findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Article> findById(Long id) {
+        try {
+            Article article = jdbcTemplate.queryForObject("""
             SELECT id,  board_id,  author_id,  title,  content,  created_date,  modified_date
             FROM article
             WHERE id = ?
             """, articleRowMapper, id);
+            return Optional.ofNullable(article);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -80,7 +89,8 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
             ps.setString(4, article.getContent());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue())
+                .orElseThrow(()->new ArticleNotFoundException("게시물을 찾을 수 없습니다."));
     }
 
     @Override
@@ -95,7 +105,8 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
             article.getContent(),
             article.getId()
         );
-        return findById(article.getId());
+        return findById(article.getId())
+                .orElseThrow(()-> new ArticleNotFoundException("게시물을 찾을 수 없습니다."));
     }
 
     @Override
@@ -106,3 +117,4 @@ public class ArticleRepositoryJdbc implements ArticleRepository {
             """, id);
     }
 }
+*/

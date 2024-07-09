@@ -34,5 +34,6 @@ public record ArticleResponse(
             article.getCreatedAt(),
             article.getModifiedAt()
         );
+
     }
 }

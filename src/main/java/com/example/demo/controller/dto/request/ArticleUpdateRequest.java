@@ -4,6 +4,7 @@ public record ArticleUpdateRequest(
     Long boardId,
     String title,
     String description
+
 ) {
 
 }

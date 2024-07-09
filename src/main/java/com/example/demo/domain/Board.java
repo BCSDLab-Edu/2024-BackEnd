@@ -1,9 +1,29 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "board")
+@Getter
+@Setter
 public class Board {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles = new ArrayList<>();
+
+    protected Board() {}
 
     public Board(Long id, String name) {
         this.id = id;
@@ -14,19 +34,18 @@ public class Board {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public void update(String name) {
         this.name = name;
     }
+
+    public void addArticle(Article article) {
+        articles.add(article);
+        article.setBoard(this);
+    }
+
+    public void removeArticle(Article article) {
+        articles.remove(article);
+        article.setBoard(null);
+    }
+
 }

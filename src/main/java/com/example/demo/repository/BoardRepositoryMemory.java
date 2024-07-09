@@ -1,8 +1,10 @@
+/*
 package com.example.demo.repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.demo.domain.Board;
@@ -28,8 +30,8 @@ public class BoardRepositoryMemory implements BoardRepository {
     }
 
     @Override
-    public Board findById(Long id) {
-        return boards.getOrDefault(id, null);
+    public Optional<Board> findById(Long id) {
+        return Optional.ofNullable(boards.getOrDefault(id, null));
     }
 
     @Override
@@ -48,3 +50,4 @@ public class BoardRepositoryMemory implements BoardRepository {
         return boards.put(board.getId(), board);
     }
 }
+*/

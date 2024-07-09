@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,7 @@ public class ArticleController {
 
     @PostMapping("/articles")
     public ResponseEntity<ArticleResponse> crateArticle(
-        @RequestBody ArticleCreateRequest request
+        @Valid @RequestBody ArticleCreateRequest request
     ) {
         ArticleResponse response = articleService.create(request);
         return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);

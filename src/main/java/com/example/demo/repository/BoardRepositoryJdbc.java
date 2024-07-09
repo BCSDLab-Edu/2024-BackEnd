@@ -1,8 +1,13 @@
+/*
 package com.example.demo.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.exception.BoardNotFoundException;
+import com.example.demo.exception.MemberNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Board;
 
-@Repository
+//@Repository
 public class BoardRepositoryJdbc implements BoardRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -34,12 +39,17 @@ public class BoardRepositoryJdbc implements BoardRepository {
     }
 
     @Override
-    public Board findById(Long id) {
-        return jdbcTemplate.queryForObject("""
+    public Optional<Board> findById(Long id) {
+        try{
+            Board board =jdbcTemplate.queryForObject("""
             SELECT id, name
             FROM board
             WHERE id = ?
             """, boardRowMapper, id);
+            return Optional.ofNullable(board);
+        } catch(Exception e){
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -52,7 +62,8 @@ public class BoardRepositoryJdbc implements BoardRepository {
             ps.setString(1, board.getName());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue())
+                .orElseThrow(()->new BoardNotFoundException("게시판을 찾을 수 없습니다."));
     }
 
     @Override
@@ -70,3 +81,4 @@ public class BoardRepositoryJdbc implements BoardRepository {
         );
     }
 }
+*/

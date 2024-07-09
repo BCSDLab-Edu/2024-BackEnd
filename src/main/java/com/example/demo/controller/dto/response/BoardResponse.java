@@ -10,4 +10,5 @@ public record BoardResponse(
     public static BoardResponse from(Board board) {
         return new BoardResponse(board.getId(), board.getName());
     }
+
 }
