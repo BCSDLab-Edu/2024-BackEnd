@@ -3,6 +3,10 @@ package com.example.demo.controller;
 import java.net.URI;
 import java.util.List;
 
+import com.example.demo.validate.ArticleValidate;
+import com.example.demo.validate.BoardValidate;
+import com.example.demo.validate.MemberValidate;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,47 +26,66 @@ import com.example.demo.service.ArticleService;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleValidate articleValidate;
+    private final BoardValidate boardValidate;
+    private final MemberValidate memberValidate;
 
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService,
+                             ArticleValidate articleValidate,
+                             BoardValidate boardValidate,
+                             MemberValidate memberValidate) {
         this.articleService = articleService;
+        this.articleValidate = articleValidate;
+        this.boardValidate = boardValidate;
+        this.memberValidate = memberValidate;
     }
 
     @GetMapping("/articles")
     public ResponseEntity<List<ArticleResponse>> getArticles(
-        @RequestParam Long boardId
+            @RequestParam Long boardId
     ) {
         List<ArticleResponse> response = articleService.getByBoardId(boardId);
+
+        articleValidate.validateResponseIsEmpty(response);
+
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/articles/{id}")
     public ResponseEntity<ArticleResponse> getArticle(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
+        articleValidate.validateContainId(id);
+
         ArticleResponse response = articleService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/articles")
     public ResponseEntity<ArticleResponse> crateArticle(
-        @RequestBody ArticleCreateRequest request
+            @Valid @RequestBody ArticleCreateRequest request
     ) {
+        boardValidate.validateCreateContainId(request.boardId());
+        memberValidate.validateCreateContainId(request.authorId());
+
         ArticleResponse response = articleService.create(request);
         return ResponseEntity.created(URI.create("/articles/" + response.id())).body(response);
     }
 
     @PutMapping("/articles/{id}")
     public ResponseEntity<ArticleResponse> updateArticle(
-        @PathVariable Long id,
-        @RequestBody ArticleUpdateRequest request
+            @PathVariable Long id,
+            @Valid @RequestBody ArticleUpdateRequest request
     ) {
+        boardValidate.validateUpdateContainId(request.boardId());
+
         ArticleResponse response = articleService.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/articles/{id}")
     public ResponseEntity<Void> updateArticle(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         articleService.delete(id);
         return ResponseEntity.noContent().build();

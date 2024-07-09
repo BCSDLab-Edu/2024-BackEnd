@@ -24,11 +24,11 @@ public record ArticleResponse(
     LocalDateTime modifiedDate
 ) {
 
-    public static ArticleResponse of(Article article, Member member, Board board) {
+    public static ArticleResponse of(Article article) {
         return new ArticleResponse(
             article.getId(),
-            member.getId(),
-            board.getId(),
+            article.getAuthor().getId(),
+            article.getBoard().getId(),
             article.getTitle(),
             article.getContent(),
             article.getCreatedAt(),

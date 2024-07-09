@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.security.SecurityConfig;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +18,15 @@ import com.example.demo.repository.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public MemberResponse getById(Long id) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         return MemberResponse.from(member);
     }
 
@@ -33,11 +37,20 @@ public class MemberService {
             .toList();
     }
 
+    public Member getByEmail(String email) {
+        Member member = memberRepository.findByEmail(email).get();
+        return member;
+    }
+
     @Transactional
     public MemberResponse create(MemberCreateRequest request) {
-        Member member = memberRepository.insert(
-            new Member(request.name(), request.email(), request.password())
+        Member member = new Member(
+                request.name(),
+                request.email(),
+                passwordEncoder.encode(request.password())
         );
+        memberRepository.save(member);
+
         return MemberResponse.from(member);
     }
 
@@ -48,9 +61,13 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id).get();
         member.update(request.name(), request.email());
-        memberRepository.update(member);
+
+        memberRepository.save(member);
+
         return MemberResponse.from(member);
     }
+
+
 }

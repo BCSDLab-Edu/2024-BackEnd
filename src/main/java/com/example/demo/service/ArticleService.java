@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,9 @@ public class ArticleService {
     private final BoardRepository boardRepository;
 
     public ArticleService(
-        ArticleRepository articleRepository,
-        MemberRepository memberRepository,
-        BoardRepository boardRepository
+            ArticleRepository articleRepository,
+            MemberRepository memberRepository,
+            BoardRepository boardRepository
     ) {
         this.articleRepository = articleRepository;
         this.memberRepository = memberRepository;
@@ -34,49 +35,49 @@ public class ArticleService {
     }
 
     public ArticleResponse getById(Long id) {
-        Article article = articleRepository.findById(id);
-        Member member = memberRepository.findById(article.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        Optional<Article> article = articleRepository.findById(id);
+        return ArticleResponse.of(article.get());
+    }
+
+    public List<Article> getAll() {
+        return articleRepository.findAll();
     }
 
     public List<ArticleResponse> getByBoardId(Long boardId) {
-        List<Article> articles = articleRepository.findAllByBoardId(boardId);
-        return articles.stream()
-            .map(article -> {
-                Member member = memberRepository.findById(article.getAuthorId());
-                Board board = boardRepository.findById(article.getBoardId());
-                return ArticleResponse.of(article, member, board);
-            })
-            .toList();
+        List<Article> articles = boardRepository.findById(boardId).get().getArticles();
+        return articles.stream().map(ArticleResponse::of).toList();
     }
 
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
-        Article article = new Article(
-            request.authorId(),
-            request.boardId(),
-            request.title(),
-            request.description()
-        );
-        Article saved = articleRepository.insert(article);
-        Member member = memberRepository.findById(saved.getAuthorId());
-        Board board = boardRepository.findById(saved.getBoardId());
-        return ArticleResponse.of(saved, member, board);
+        Board board = boardRepository.findById(request.boardId()).get();
+        Member author = memberRepository.findById(request.authorId()).get();
+
+        Article article = new Article(author, board, request.title(), request.description());
+
+        articleRepository.save(article);
+
+        return ArticleResponse.of(article);
     }
 
     @Transactional
     public ArticleResponse update(Long id, ArticleUpdateRequest request) {
-        Article article = articleRepository.findById(id);
-        article.update(request.boardId(), request.title(), request.description());
-        Article updated = articleRepository.update(article);
-        Member member = memberRepository.findById(updated.getAuthorId());
-        Board board = boardRepository.findById(article.getBoardId());
-        return ArticleResponse.of(article, member, board);
+        Article article = articleRepository.findById(id).get();
+        article.update(
+                boardRepository.findById(request.boardId()).get(),
+                request.title(),
+                request.description()
+        );
+
+        articleRepository.save(article);
+
+        return ArticleResponse.of(article);
     }
 
     @Transactional
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
+
+
 }
