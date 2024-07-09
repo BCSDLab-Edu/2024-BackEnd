@@ -1,11 +1,31 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "member", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email", name = "UK_MEMBER_EMAIL")
+})
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<Article> articles;
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
@@ -24,6 +44,8 @@ public class Member {
         this.name = name;
         this.email = email;
     }
+
+    protected Member() {}
 
     public void setId(Long id) {
         this.id = id;

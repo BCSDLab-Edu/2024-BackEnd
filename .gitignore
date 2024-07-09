@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 보안을 위한 제거 ###
+application.yml

@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.controller.dto.request.MemberLoginRequest;
+import com.example.demo.controller.dto.response.LoginResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +47,11 @@ public class MemberController {
     ) {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/members/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody MemberLoginRequest request) {
+        return ResponseEntity.ok(memberService.login(request));
     }
 
     @PutMapping("/members/{id}")
