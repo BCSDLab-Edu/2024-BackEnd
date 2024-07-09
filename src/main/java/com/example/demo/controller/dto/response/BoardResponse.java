@@ -1,6 +1,6 @@
 package com.example.demo.controller.dto.response;
 
-import com.example.demo.domain.Board;
+import com.example.demo.entity.Board;
 
 public record BoardResponse(
     Long id,

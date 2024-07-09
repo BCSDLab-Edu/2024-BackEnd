@@ -2,17 +2,29 @@ package com.example.demo.repository;
 
 import java.util.List;
 
-import com.example.demo.domain.Board;
+import jakarta.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-public interface BoardRepository {
+import com.example.demo.entity.Board;
 
-    List<Board> findAll();
+@Repository
+public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Board findById(Long id);
+    default Board insert(Board board) {
+        return save(board);
+    }
 
-    Board insert(Board board);
+    default void deleteById(Long id) {
+        delete(findById(id).get());
+    }
 
-    void deleteById(Long id);
+    default Board update(Board board) {
+        return save(board);
+    }
 
-    Board update(Board board);
+    default boolean isExist(Long id) {
+        return findById(id).isPresent();
+    }
 }

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Articles</title>
+</head>
+<body>
+<h1>My Articles</h1>
+<h th:each="article : ${articles}">
+    <h2 th:text="${article.title()}">title</h2>
+    <h3 th:text="${article.description()}">content</h3>
+    <h4 th:text="${article.createdDate()}">created</h4><h4 th:text="${article.modifiedDate()}">edited</h4><br>
+</h>
+</body>
+</html>

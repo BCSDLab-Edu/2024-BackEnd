@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.exception.HTTPApiException;
+import com.example.demo.proxyservice.MemberProxyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +21,9 @@ import com.example.demo.service.MemberService;
 @RestController
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberProxyService memberService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberProxyService memberService) {
         this.memberService = memberService;
     }
 
@@ -42,7 +44,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> create(
         @RequestBody MemberCreateRequest request
-    ) {
+    ) throws HTTPApiException {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
     }
@@ -51,7 +53,7 @@ public class MemberController {
     public ResponseEntity<MemberResponse> updateMember(
         @PathVariable Long id,
         @RequestBody MemberUpdateRequest request
-    ) {
+    ) throws HTTPApiException {
         MemberResponse response = memberService.update(id, request);
         return ResponseEntity.ok(response);
     }
@@ -59,7 +61,7 @@ public class MemberController {
     @DeleteMapping("/members/{id}")
     public ResponseEntity<Void> deleteMember(
         @PathVariable Long id
-    ) {
+    ) throws HTTPApiException {
         memberService.delete(id);
         return ResponseEntity.noContent().build();
     }
