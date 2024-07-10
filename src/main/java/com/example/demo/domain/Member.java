@@ -1,47 +1,51 @@
 package com.example.demo.domain;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "member")
+@NoArgsConstructor
+@Getter
+@Setter
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
-    public Member(Long id, String name, String email, String password) {
+    @Column(name = "role", nullable = false)
+    private String role;
+
+    public Member(Long id, String username, String email, String password, String role) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(String name, String email, String password) {
-        this.name = name;
+    public Member(String username, String email, String password, String role) {
+        this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public void update(String name, String email) {
-        this.name = name;
+    public void update(String username, String email) {
+        this.username = username;
         this.email = email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

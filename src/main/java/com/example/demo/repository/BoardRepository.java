@@ -1,18 +1,9 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
 import com.example.demo.domain.Board;
 
-public interface BoardRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    List<Board> findAll();
+public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Board findById(Long id);
-
-    Board insert(Board board);
-
-    void deleteById(Long id);
-
-    Board update(Board board);
 }
